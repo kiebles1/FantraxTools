@@ -7,6 +7,7 @@ import datetime
 from Team import Team
 from Player import Player
 
+_LEAGUE_ID = 'btbtpg55kwidi85g'
 statusIndex = 4
 
 def build_team(fileName, teamName, teamId):      
@@ -39,8 +40,9 @@ def find_previous_monday_period(currentDate):
     period = currentDate - datetime.date(year=2019,month=3,day=27)
     return period.days
 
-def download_roster_file(period, teamId):
-    url = 'https://www.fantrax.com/fxpa/downloadTeamRosterStats?leagueId=1jaul1j8k2v9r9j3&pageNumber=1&period=1&scoringPeriod=1&seasonOrProjection=PROJECTION_0_135_SEASON&timeframeTypeCode=YEAR_TO_DATE&scoringCategoryType=5&statsType=1&view=STATS&teamId=' + teamId + '&adminMode=false&startDate=2020-03-26&endDate=2020-09-28&lineupChangeSystem=EASY_CLICK&daily=false&origDaily=false&'
+def download_roster_file(period, teamId, leagueId='1jaul1j8k2v9r9j3'):
+    url = 'https://www.fantrax.com/fxpa/downloadTeamRosterStats?leagueId=' + \
+        leagueId + '&pageNumber=1&period=1&scoringPeriod=1&seasonOrProjection=PROJECTION_0_135_SEASON&timeframeTypeCode=YEAR_TO_DATE&scoringCategoryType=5&statsType=1&view=STATS&teamId=' + teamId + '&adminMode=false&startDate=2020-03-26&endDate=2020-09-28&lineupChangeSystem=EASY_CLICK&daily=false&origDaily=false&'
     webbrowser.get('windows-default').open(url)
     
     dwnld_directory = os.path.join(pathlib.Path.home(), 'Downloads')
@@ -77,7 +79,7 @@ def main():
         if pair[0] ==  'Team Name':
             continue
             
-        destination_file = download_roster_file(currentPeriod, pair[1])
+        destination_file = download_roster_file(currentPeriod, pair[1], _LEAGUE_ID)
         teamsList.append(build_team(destination_file, pair[0], pair[1]))
     
     for team in teamsList:
