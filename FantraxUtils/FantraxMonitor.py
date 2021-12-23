@@ -41,11 +41,12 @@ def find_previous_monday_period(currentDate):
     return period.days
 
 def download_roster_file(period, teamId, leagueId='1jaul1j8k2v9r9j3'):
+    # TODO generate season code (currently 139 for 2022 projections)
     url = 'https://www.fantrax.com/fxpa/downloadTeamRosterStats?leagueId=' + \
-        leagueId + '&pageNumber=1&period=1&scoringPeriod=1&seasonOrProjection=PROJECTION_0_135_SEASON&timeframeTypeCode=YEAR_TO_DATE&scoringCategoryType=5&statsType=1&view=STATS&teamId=' + teamId + '&adminMode=false&startDate=2020-03-26&endDate=2020-09-28&lineupChangeSystem=EASY_CLICK&daily=false&origDaily=false&'
+        leagueId + '&pageNumber=1&period=1&scoringPeriod=1&seasonOrProjection=PROJECTION_0_139_SEASON&timeframeTypeCode=YEAR_TO_DATE&scoringCategoryType=5&statsType=1&view=STATS&teamId=' + teamId + '&adminMode=false&startDate=2020-03-26&endDate=2020-09-28&lineupChangeSystem=EASY_CLICK&daily=false&origDaily=false&'
     webbrowser.get('windows-default').open(url)
     
-    dwnld_directory = os.path.join(pathlib.Path.home(), 'Downloads')
+    dwnld_directory = os.path.join(pathlib.Path.home(), 'Rosters')
     exists = False
     while exists is False:
         exists = os.path.isfile(os.path.join(dwnld_directory, 'Fantrax-Team-Roster-Millennial Bark.csv'))
@@ -80,6 +81,7 @@ def main():
             continue
             
         destination_file = download_roster_file(currentPeriod, pair[1], _LEAGUE_ID)
+        # destination_file = download_roster_file(currentPeriod, 'gds3fwcakwidi85h', _LEAGUE_ID)
         teamsList.append(build_team(destination_file, pair[0], pair[1]))
     
     for team in teamsList:
