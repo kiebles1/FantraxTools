@@ -54,6 +54,10 @@ class SheetsService():
             body=spreadsheet_properties, fields='spreadsheetId').execute()
         return spreadsheet.get('spreadsheetId')
 
+    def write_sheet(self, worksheet_id, sheet_name, data):
+        self.service.spreadsheets().values().append(
+            spreadsheetId=worksheet_id, valueInputOption='RAW', range=sheet_name, body={'values': data}).execute()
+            
 def main():
     """Shows basic usage of the Sheets API.
     Prints values from a sample spreadsheet.
@@ -100,4 +104,5 @@ if __name__ == '__main__':
     # main()
     service = SheetsService()
     steve_id = service.create_sheet('SteveSheet')
+    # service.write_sheet(steve_id, [[1,2,3],[4,5,6]])
     print('ID: {}'.format(steve_id))
