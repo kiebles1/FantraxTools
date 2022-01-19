@@ -46,7 +46,24 @@ class SheetsService():
         except HttpError as err:
             print(err)
 
-    def create_sheet(self, name):
+    def read_sheet(self, worksheet_id, sheet_name, range=None):
+        if range is None:
+            range=sheet_name
+        else:
+            range=sheet_name + ':' + range
+
+        values = self.service.spreadsheets().values().get(spreadsheetId=worksheet_id, range=range).execute()
+        data = values.get('values', [])
+
+        return data
+
+    def add_sheet(self, worksheet_id, sheet_name):
+        request = {'requests': [{
+            'addSheet': {'properties': {'title': sheet_name}}
+        }]}
+        self.service.spreadsheets().batchUpdate(spreadsheetId=worksheet_id, body=request).execute()
+
+    def create_worksheet(self, name):
         spreadsheet_properties = {
             'properties': {'title': name }
         }
@@ -103,6 +120,11 @@ def main():
 if __name__ == '__main__':
     # main()
     service = SheetsService()
-    steve_id = service.create_sheet('SteveSheet')
+    steve_id = service.create_worksheet('SteveSheet')
     # service.write_sheet(steve_id, [[1,2,3],[4,5,6]])
-    print('ID: {}'.format(steve_id))
+    # data = service.read_sheet(FANTRAX_ROSTER_SPREADSHEET_ID, 'Roster')
+    service.add_sheet(steve_id, 'NewSheet')
+    # print(type(data[0]))
+    # print(data)
+
+    # print('ID: {}'.format(steve_id))
