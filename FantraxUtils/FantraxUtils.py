@@ -4,8 +4,9 @@ import os
 import shutil
 import pathlib
 import datetime
-from Team import Team
-from Player import Player
+from FantraxUtils.Team import Team
+from FantraxUtils.Player import Player
+from FantraxRequestHandler.src.sheets_connect import SheetsService
 
 _LEAGUE_ID = 'btbtpg55kwidi85g'
 statusIndex = 4
@@ -65,28 +66,35 @@ def get_team_name_id_pairs(fileName):
 
     return teamNamesIdsList
     
+def download_teams_to_sheets():
+    sheets_service = SheetsService()
+    id = sheets_service.create_sheet('SteveSheet')
+    print('ID: {}'.format(id))
+
 def main():
     # might like to make this print to a log
     print('Starting fantrax monitor...')
-    
-    teamsList = []
-    nameIdPairs = get_team_name_id_pairs('Teams.csv')
-    startDate = datetime.date.today()
-    currentPeriod = find_previous_monday_period(startDate)
-    startDate = datetime.date.today() - datetime.timedelta(days=7)
-    previousPeriod = find_previous_monday_period(startDate)
-    for pair in nameIdPairs:
-        # print(pair[0] + ', ' + pair[1])
-        if pair[0] ==  'Team Name':
-            continue
+
+    download_teams_to_sheets()
+
+    # teamsList = []
+    # nameIdPairs = get_team_name_id_pairs('cfg/Teams.csv')
+    # startDate = datetime.date.today()
+    # currentPeriod = find_previous_monday_period(startDate)
+    # startDate = datetime.date.today() - datetime.timedelta(days=7)
+    # previousPeriod = find_previous_monday_period(startDate)
+    # for pair in nameIdPairs:
+    #     # print(pair[0] + ', ' + pair[1])
+    #     if pair[0] ==  'Team Name':
+    #         continue
             
-        destination_file = download_roster_file(currentPeriod, pair[1], _LEAGUE_ID)
-        # destination_file = download_roster_file(currentPeriod, 'gds3fwcakwidi85h', _LEAGUE_ID)
-        teamsList.append(build_team(destination_file, pair[0], pair[1]))
+    #     destination_file = download_roster_file(currentPeriod, pair[1], _LEAGUE_ID)
+    #     # destination_file = download_roster_file(currentPeriod, 'gds3fwcakwidi85h', _LEAGUE_ID)
+    #     teamsList.append(build_team(destination_file, pair[0], pair[1]))
     
-    for team in teamsList:
-        keylist = list(team[0].keys())
-        team.CheckRules()
+    # for team in teamsList:
+    #     keylist = list(team[0].keys())
+    #     team.CheckRules()
         
 if __name__ == '__main__':
     main()

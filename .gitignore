@@ -2,5 +2,7 @@ credentials.json
 token.json
 
 *.pyc
+*__pycache__*
 
 Fantrax-Team-Roster*
+Teams.csv
