@@ -1,4 +1,4 @@
-from FantraxRequestHandler.src.sheets_connect import SheetsService
+from UpdateTeamSheets.src.sheets_connect import SheetsService
 import FantraxUtils.FantraxUtils as FantraxUtils
 
 if __name__ == '__main__':

@@ -6,7 +6,7 @@ import pathlib
 import datetime
 from FantraxUtils.Team import Team
 from FantraxUtils.Player import Player
-from FantraxRequestHandler.src.sheets_connect import SheetsService
+from UpdateTeamSheets.src.sheets_connect import SheetsService
 
 _LEAGUE_ID = 'btbtpg55kwidi85g'
 statusIndex = 4
@@ -68,7 +68,7 @@ def get_team_name_id_pairs(fileName):
     
 def download_teams_to_sheets():
     sheets_service = SheetsService()
-    id = sheets_service.create_sheet('SteveSheet')
+    id = sheets_service.create_worksheet('SteveSheet')
     print('ID: {}'.format(id))
 
 def main():

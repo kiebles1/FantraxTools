@@ -19,7 +19,7 @@ SAMPLE_RANGE_NAME = 'Class Data!A2:E'
 FANTRAX_ROSTER_RANGE_NAME = 'Roster!C3:C26'
 
 class SheetsService():
-    _TOKEN_PATH = 'FantraxRequestHandler/cfg/token.json'
+    _TOKEN_PATH = 'UpdateTeamSheets/cfg/token.json'
 
     def __init__(self):
         """Shows basic usage of the Sheets API.
@@ -43,14 +43,14 @@ class SheetsService():
                         creds.refresh(Request())
                     else:
                         flow = InstalledAppFlow.from_client_secrets_file(
-                            'FantraxRequestHandler/cfg/credentials.json', SCOPES)
+                            'UpdateTeamSheets/cfg/credentials.json', SCOPES)
                         creds = flow.run_local_server(port=0)
                     # Save the credentials for the next run
                     with open(self._TOKEN_PATH, 'w') as token:
                         token.write(creds.to_json())
 
-                    self.service = build('sheets', 'v4', credentials=creds)
-                    success = True
+                self.service = build('sheets', 'v4', credentials=creds)
+                success = True
 
             except HttpError as err:
                 print(err)
