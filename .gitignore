@@ -1,2 +1,7 @@
 credentials.json
 token.json
+Teams.csv
+
+*.pyc
+*__pycache__*
+

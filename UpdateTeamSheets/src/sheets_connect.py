@@ -3,6 +3,7 @@ from __future__ import print_function
 import os.path
 
 from google.auth.transport.requests import Request
+from google.auth.exceptions import RefreshError
 from google.oauth2.credentials import Credentials
 from google_auth_oauthlib.flow import InstalledAppFlow
 from googleapiclient.discovery import build
@@ -18,33 +19,47 @@ SAMPLE_RANGE_NAME = 'Class Data!A2:E'
 FANTRAX_ROSTER_RANGE_NAME = 'Roster!C3:C26'
 
 class SheetsService():
+    _TOKEN_PATH = 'FantraxRequestHandler/cfg/token.json'
+
     def __init__(self):
         """Shows basic usage of the Sheets API.
         Prints values from a sample spreadsheet.
         """
-        creds = None
-        # The file token.json stores the user's access and refresh tokens, and is
-        # created automatically when the authorization flow completes for the first
-        # time.
-        if os.path.exists('../cfg/token.json'):
-            creds = Credentials.from_authorized_user_file('../cfg/token.json', SCOPES)
-        # If there are no (valid) credentials available, let the user log in.
-        if not creds or not creds.valid:
-            if creds and creds.expired and creds.refresh_token:
-                creds.refresh(Request())
-            else:
-                flow = InstalledAppFlow.from_client_secrets_file(
-                    '../cfg/credentials.json', SCOPES)
-                creds = flow.run_local_server(port=0)
-            # Save the credentials for the next run
-            with open('../cfg/token.json', 'w') as token:
-                token.write(creds.to_json())
+        count = 0
+        success = False
+        error = None
+        while (success is False) and (count < 5):
+            count += 1
+            try:
+                creds = None
+                # The file token.json stores the user's access and refresh tokens, and is
+                # created automatically when the authorization flow completes for the first
+                # time.
+                if os.path.exists(self._TOKEN_PATH):
+                    creds = Credentials.from_authorized_user_file(self._TOKEN_PATH, SCOPES)
+                # If there are no (valid) credentials available, let the user log in.
+                if not creds or not creds.valid:
+                    if creds and creds.expired and creds.refresh_token:
+                        creds.refresh(Request())
+                    else:
+                        flow = InstalledAppFlow.from_client_secrets_file(
+                            'FantraxRequestHandler/cfg/credentials.json', SCOPES)
+                        creds = flow.run_local_server(port=0)
+                    # Save the credentials for the next run
+                    with open(self._TOKEN_PATH, 'w') as token:
+                        token.write(creds.to_json())
 
-        try:
-            self.service = build('sheets', 'v4', credentials=creds)
+                    self.service = build('sheets', 'v4', credentials=creds)
+                    success = True
 
-        except HttpError as err:
-            print(err)
+            except HttpError as err:
+                print(err)
+                break
+
+            except RefreshError as err:
+                print(str(err) + '\nReplacing expired token...')
+                if os.path.exists(self._TOKEN_PATH):
+                    os.remove(self._TOKEN_PATH)
 
     def create_sheet(self, name):
         spreadsheet_properties = {
