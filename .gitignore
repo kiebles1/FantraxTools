@@ -1,2 +1,6 @@
 credentials.json
 token.json
+
+*.pyc
+
+Fantrax-Team-Roster*
