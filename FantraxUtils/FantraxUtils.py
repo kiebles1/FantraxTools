@@ -29,7 +29,6 @@ def build_team(fileName, teamName, teamId):
     return team
         
 def find_previous_monday_period(currentDate):
-    currentDate = datetime.date.today()
     loopDay = currentDate.weekday()
     print(loopDay)
     while loopDay != 0:
@@ -41,18 +40,22 @@ def find_previous_monday_period(currentDate):
     period = currentDate - datetime.date(year=2019,month=3,day=27)
     return period.days
 
-def download_roster_file(period, teamId, leagueId='1jaul1j8k2v9r9j3'):
+def download_roster_file(period, teamId, leagueId=_LEAGUE_ID):
     # TODO generate season code (currently 139 for 2022 projections)
     url = 'https://www.fantrax.com/fxpa/downloadTeamRosterStats?leagueId=' + \
-        leagueId + '&pageNumber=1&period=1&scoringPeriod=1&seasonOrProjection=PROJECTION_0_139_SEASON&timeframeTypeCode=YEAR_TO_DATE&scoringCategoryType=5&statsType=1&view=STATS&teamId=' + teamId + '&adminMode=false&startDate=2020-03-26&endDate=2020-09-28&lineupChangeSystem=EASY_CLICK&daily=false&origDaily=false&'
+        leagueId + '&pageNumber=1&period=1&scoringPeriod=' + str(period) + '&seasonOrProjection=PROJECTION_0_139_SEASON&timeframeTypeCode=YEAR_TO_DATE&scoringCategoryType=5&statsType=1&view=STATS&teamId=' + teamId + '&adminMode=false&startDate=2020-03-26&endDate=2020-09-28&lineupChangeSystem=EASY_CLICK&daily=false&origDaily=false&'
     webbrowser.get('windows-default').open(url)
     
-    dwnld_directory = os.path.join(pathlib.Path.home(), 'Rosters')
+    dwnld_directory = os.path.join(pathlib.Path.home(), 'Downloads')
     exists = False
     while exists is False:
         exists = os.path.isfile(os.path.join(dwnld_directory, 'Fantrax-Team-Roster-Millennial Bark.csv'))
 
-    destination_file = os.path.join(os.getcwd(), 'Downloads\Fantrax-Team-Roster-Millennial Bark-' + teamId + '-' + str(period) + '.csv')
+    destPath = os.path.join(os.getcwd(), 'Rosters')
+    if os.path.isdir(destPath) == False:
+        os.mkdir(destPath)
+
+    destination_file = os.path.join(destPath, 'Fantrax-Team-Roster-Millennial Bark-' + teamId + '-' + str(period) + '.csv')
     shutil.move(os.path.join(dwnld_directory, 'Fantrax-Team-Roster-Millennial Bark.csv'), destination_file)
     return destination_file
     
@@ -70,6 +73,17 @@ def download_teams_to_sheets():
     sheets_service = SheetsService()
     id = sheets_service.create_worksheet('SteveSheet')
     print('ID: {}'.format(id))
+
+#TODO add destination dir as param
+def download_all_roster_files(period=None, leagueId=_LEAGUE_ID, teamsFile='cfg/Teams.csv'):
+    if period is None:
+        teamsList = []
+        nameIdPairs = get_team_name_id_pairs(teamsFile)
+        for pair in nameIdPairs:
+            if pair[0] == 'Team Name':
+                continue
+        
+            destination_file = download_roster_file(1, pair[1])
 
 def main():
     # might like to make this print to a log
