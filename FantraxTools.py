@@ -10,9 +10,10 @@ def create_arb_workbook(teamName):
 def populate_team_sheet(teamName, teamId, workbookId):
     print('not ready')
 
-def write_player_to_team_sheet(teamName, teamId, workbookId, player):
+def write_player_to_team_sheet(teamName, workbookId, player):
     service = SheetsService()
-    service.execute_sheets_operation('write', worksheet_id=workbookId, sheet_name=teamName, data=player)
+    # data has to be a 2d list, even if you only have 1 row of data
+    service.execute_sheets_operation('write', worksheet_id=workbookId, sheet_name=teamName, data=[list(player.values())])
 
 def add_team_to_arb_workbook(teamName, teamId, workbookId):
     service = SheetsService()

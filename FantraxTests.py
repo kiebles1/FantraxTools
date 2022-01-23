@@ -12,10 +12,19 @@ class TestFantraxUtils(unittest.TestCase):
         self.assertTrue(
             len([name for name in os.listdir(dir) if os.path.isfile(os.path.join(dir, name))]) == 12
         )
+
+    def testPlayerMethods(self):
+        plr = ftu.Player({'name': 'Mike Trout', 'Pos': 'OF'})
+        self.assertTrue(list(plr.values()) == ['Mike Trout', 'OF'])
         
 class TestFantraxTools(unittest.TestCase):
     def testCreateArbSheets(self):
         ftools.create_arb_workbooks()
+
+    def testWritePlayer(self):
+        wsid = ftools.create_arb_workbook('testTeam')
+        plr = ftu.Player({'Name':'Mike Trout', 'Pos':'OF', 'Salary':'5'})
+        ftools.write_player_to_team_sheet('Sheet1', wsid, plr)
 
 class TestSheetsService(unittest.TestCase):
     def create_test_sheet(self):
