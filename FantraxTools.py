@@ -18,6 +18,10 @@ def add_team_to_arb_workbook(teamName, teamId, workbookId):
     service = SheetsService()
     service.add_sheet(workbookId, teamName)
 
+def remove_leftover_sheet_from_arb_workbook(workbookId):
+    service = SheetsService()
+    service.delete_sheet(workbookId, 0)
+
 def create_arb_workbooks():
     pairsList = FantraxUtils.get_team_name_id_pairs('./FantraxUtils/cfg/Teams.csv')
     for outerPair in pairsList:
@@ -34,6 +38,12 @@ def create_arb_workbooks():
             # teams don't need to do their own arb
             if (innerName == 'Team Name') or (innerName == outerName):
                 continue
+
+            add_team_to_arb_workbook(innerName, innerId, currentWorkbookId)
+
+        remove_leftover_sheet_from_arb_workbook(currentWorkbookId)
+
+        
 
 if __name__ == '__main__':
     FantraxUtils.download_teams_to_sheets()
