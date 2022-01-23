@@ -30,6 +30,12 @@ class TestFantraxTools(unittest.TestCase):
         data = svc.execute_sheets_operation('read', worksheet_id=wsid, sheet_name='Sheet1')
         self.assertTrue(list(data) == [list(plr.values())])
 
+    def testWriteHeaders(self):
+        wsid = ftools.create_arb_workbook('testTeam')
+        plr = ftu.Player({'Name':'Mike Trout', 'Pos':'OF', 'Salary':'5'})
+        ftools.write_headers_to_team_sheet(wsid, 'Sheet1', list(plr.keys()))
+        ftools.write_player_to_team_sheet('Sheet1', wsid, plr)
+
 class TestSheetsService(unittest.TestCase):
     def create_test_sheet(self):
         self.service = sc.SheetsService()
