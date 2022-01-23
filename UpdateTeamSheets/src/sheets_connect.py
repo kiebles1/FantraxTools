@@ -70,7 +70,7 @@ class SheetsService():
             try:
                 success = True
                 if op == 'read':
-                    ret = self._read_sheet(worksheet_id, sheet_name, data_data_range)
+                    ret = self._read_sheet(worksheet_id, sheet_name, data_range)
                 elif op == 'get_ids':
                     ret = self._get_sheet_ids(worksheet_id)
                 elif op == 'add_sheet':
