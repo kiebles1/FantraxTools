@@ -20,23 +20,23 @@ class TestFantraxTools(unittest.TestCase):
 class TestSheetsService(unittest.TestCase):
     def create_test_sheet(self):
         self.service = sc.SheetsService()
-        self.wsid = self.service.create_worksheet('TestSheet')
+        self.wsid = self.service.execute_sheets_operation('create', workbook_name='TestSheet')
 
     def testWriteDictToSheet(self):
         guy = {'name':'Mike Trout','cost':'21', 'pos':'OF'}
         guy = [list(guy.keys()), list(guy.values())]
         self.create_test_sheet()
-        self.service.add_sheet(self.wsid, 'test1')
-        self.service.write_sheet(self.wsid, 'test1', guy)
+        self.service.execute_sheets_operation('add_sheet', worksheet_id=self.wsid, sheet_name='test1')
+        self.service.execute_sheets_operation('write', worksheet_id=self.wsid, sheet_name='test1', data=guy)
 
     def testGetSheetIds(self):
         self.create_test_sheet()
-        self.service.get_sheet_ids(self.wsid)
+        self.service.execute_sheets_operation('get_ids', worksheet_id=self.wsid)
 
     def testDeleteSheet(self):
         self.create_test_sheet()
-        self.service.add_sheet(self.wsid, 'test')
-        self.service.delete_sheet(self.wsid, 0)
+        self.service.execute_sheets_operation('add_sheet', worksheet_id=self.wsid, sheet_name='test')
+        self.service.execute_sheets_operation('delete_sheet', worksheet_id=self.wsid, sheet_id=0)
 
 if __name__ == '__main__':
     unittest.main()

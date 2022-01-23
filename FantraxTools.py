@@ -4,7 +4,7 @@ import datetime
 
 def create_arb_workbook(teamName):
     service = SheetsService()
-    workbookId = service.create_worksheet(teamName + '_' + str(datetime.date.today().year))
+    workbookId = service.execute_sheets_operation('create', workbook_name=teamName + '_' + str(datetime.date.today().year))
     return workbookId
 
 def populate_team_sheet(teamName, teamId, workbookId):
@@ -12,15 +12,15 @@ def populate_team_sheet(teamName, teamId, workbookId):
 
 def write_player_to_team_sheet(teamName, teamId, workbookId, player):
     service = SheetsService()
-    service.write_sheet(workbookId, teamName, player)
+    service.execute_sheets_operation('write', worksheet_id=workbookId, sheet_name=teamName, data=player)
 
 def add_team_to_arb_workbook(teamName, teamId, workbookId):
     service = SheetsService()
-    service.add_sheet(workbookId, teamName)
+    service.execute_sheets_operation('add_sheet', worksheet_id=workbookId, sheet_name=teamName)
 
 def remove_leftover_sheet_from_arb_workbook(workbookId):
     service = SheetsService()
-    service.delete_sheet(workbookId, 0)
+    service.execute_sheets_operation('delete_sheet', worksheet_id=workbookId, sheet_id=0)
 
 def create_arb_workbooks():
     pairsList = FantraxUtils.get_team_name_id_pairs('./FantraxUtils/cfg/Teams.csv')

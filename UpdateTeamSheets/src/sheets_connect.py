@@ -1,6 +1,7 @@
 from __future__ import print_function
 
 import os.path
+import time
 
 from google.auth.transport.requests import Request
 from google.auth.exceptions import RefreshError
@@ -61,30 +62,64 @@ class SheetsService():
                 if os.path.exists(self._TOKEN_PATH):
                     os.remove(self._TOKEN_PATH)
 
-    def read_sheet(self, worksheet_id, sheet_name, range=None):
-        if range is None:
-            range=sheet_name
-        else:
-            range=sheet_name + ':' + range
+    def execute_sheets_operation(self, op, worksheet_id=None, workbook_name=None, sheet_name=None, \
+        data_range=None, data=None, sheet_id=None):
+        success = False
+        ret = None
+        while success is False:
+            try:
+                success = True
+                if op == 'read':
+                    ret = self._read_sheet(worksheet_id, sheet_name, data_data_range)
+                elif op == 'get_ids':
+                    ret = self._get_sheet_ids(worksheet_id)
+                elif op == 'add_sheet':
+                    self._add_sheet(worksheet_id, sheet_name)
+                elif op == 'create':
+                    ret = self._create_worksheet(workbook_name)
+                elif op == 'write':
+                    self._write_sheet(worksheet_id, sheet_name, data)
+                elif op == 'delete_sheet':
+                    self._delete_sheet(worksheet_id, sheet_id)
+                else:
+                    success = False
+            except HttpError as err:
+                if err.status_code == 429:
+                    time.sleep(30)
+                    success = False
+                else:
+                    break
+            except:
+                break    
 
-        values = self.service.spreadsheets().values().get(spreadsheetId=worksheet_id, range=range).execute()
+        return ret
+
+    def _read_sheet(self, worksheet_id, sheet_name, data_range=None):
+        if data_range is None:
+            data_range=sheet_name
+        else:
+            data_range=sheet_name + ':' + data_range
+
+        values = self.service.spreadsheets().values().get(spreadsheetId=worksheet_id, range=data_range).execute()
         data = values.get('values', [])
 
         return data       
 
-    def get_sheet_ids(self, worksheet_id):
+    def _get_sheet_ids(self, worksheet_id):
         spreadsheet = self.service.spreadsheets().get(spreadsheetId=worksheet_id).execute()
         idList = list()
         for sheet in spreadsheet['sheets']:
             idList.append(sheet['properties']['sheetId'])
 
-    def add_sheet(self, worksheet_id, sheet_name):
+        return idList
+
+    def _add_sheet(self, worksheet_id, sheet_name):
         request = {'requests': [{
             'addSheet': {'properties': {'title': sheet_name}}
         }]}
         self.service.spreadsheets().batchUpdate(spreadsheetId=worksheet_id, body=request).execute()
 
-    def create_worksheet(self, name):
+    def _create_worksheet(self, name):
         spreadsheet_properties = {
             'properties': {'title': name }
         }
@@ -92,11 +127,11 @@ class SheetsService():
             body=spreadsheet_properties, fields='spreadsheetId').execute()
         return spreadsheet.get('spreadsheetId')
 
-    def write_sheet(self, worksheet_id, sheet_name, data):
+    def _write_sheet(self, worksheet_id, sheet_name, data):
         self.service.spreadsheets().values().append(
             spreadsheetId=worksheet_id, valueInputOption='RAW', range=sheet_name, body={'values': data}).execute()
 
-    def delete_sheet(self, worksheet_id, sheet_id):
+    def _delete_sheet(self, worksheet_id, sheet_id):
         request = {'requests': [{
             'deleteSheet': {'sheetId': sheet_id}
         }]}
