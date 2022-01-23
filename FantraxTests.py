@@ -15,16 +15,28 @@ class TestFantraxUtils(unittest.TestCase):
         
 class TestFantraxTools(unittest.TestCase):
     def testCreateArbSheets(self):
-        ftools.create_arb_sheets()
+        ftools.create_arb_workbooks()
 
 class TestSheetsService(unittest.TestCase):
+    def create_test_sheet(self):
+        self.service = sc.SheetsService()
+        self.wsid = self.service.create_worksheet('TestSheet')
+
     def testWriteDictToSheet(self):
         guy = {'name':'Mike Trout','cost':'21', 'pos':'OF'}
         guy = [list(guy.keys()), list(guy.values())]
-        service = sc.SheetsService()
-        wsid = service.create_worksheet('TestSheet')
-        service.add_sheet(wsid, 'test1')
-        service.write_sheet(wsid, 'test1', guy)
+        self.create_test_sheet()
+        self.service.add_sheet(self.wsid, 'test1')
+        self.service.write_sheet(self.wsid, 'test1', guy)
+
+    def testGetSheetIds(self):
+        self.create_test_sheet()
+        self.service.get_sheet_ids(self.wsid)
+
+    def testDeleteSheet(self):
+        self.create_test_sheet()
+        self.service.add_sheet(self.wsid, 'test')
+        self.service.delete_sheet(self.wsid, 0)
 
 if __name__ == '__main__':
     unittest.main()

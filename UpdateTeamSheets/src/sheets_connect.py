@@ -70,7 +70,13 @@ class SheetsService():
         values = self.service.spreadsheets().values().get(spreadsheetId=worksheet_id, range=range).execute()
         data = values.get('values', [])
 
-        return data
+        return data       
+
+    def get_sheet_ids(self, worksheet_id):
+        spreadsheet = self.service.spreadsheets().get(spreadsheetId=worksheet_id).execute()
+        idList = list()
+        for sheet in spreadsheet['sheets']:
+            idList.append(sheet['properties']['sheetId'])
 
     def add_sheet(self, worksheet_id, sheet_name):
         request = {'requests': [{
@@ -89,7 +95,13 @@ class SheetsService():
     def write_sheet(self, worksheet_id, sheet_name, data):
         self.service.spreadsheets().values().append(
             spreadsheetId=worksheet_id, valueInputOption='RAW', range=sheet_name, body={'values': data}).execute()
-            
+
+    def delete_sheet(self, worksheet_id, sheet_id):
+        request = {'requests': [{
+            'deleteSheet': {'sheetId': sheet_id}
+        }]}
+        self.service.spreadsheets().batchUpdate(spreadsheetId=worksheet_id, body=request).execute()
+
 if __name__ == '__main__':
     # main()
     service = SheetsService()
