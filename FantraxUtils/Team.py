@@ -8,7 +8,7 @@ class Team(list):
 
     def __repr__(self):
         return self.name
-        
+
     def CheckRules(self):
         result = self.ValidateMinorsSize()
         print(self.name + ': ' + str(result))

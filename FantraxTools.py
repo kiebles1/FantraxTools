@@ -1,5 +1,6 @@
 from UpdateTeamSheets.src.sheets_connect import SheetsService
 import FantraxUtils.FantraxUtils as FantraxUtils
+from FantraxUtils import Team
 import datetime
 
 def create_arb_workbook(teamName):
@@ -27,6 +28,11 @@ def remove_leftover_sheet_from_arb_workbook(workbookId):
     service = SheetsService()
     service.execute_sheets_operation('delete_sheet', worksheet_id=workbookId, sheet_id=0)
 
+def export_roster_to_arb_workbook(team, workbookId):
+    for player in team:
+        # TODO consider if there is a batch write that maybe counts as less operations
+        write_player_to_team_sheet(team.name, workbookId, player)
+
 def create_arb_workbooks():
     pairsList = FantraxUtils.get_team_name_id_pairs('./FantraxUtils/cfg/Teams.csv')
     for outerPair in pairsList:
@@ -47,8 +53,6 @@ def create_arb_workbooks():
             add_team_to_arb_workbook(innerName, innerId, currentWorkbookId)
 
         remove_leftover_sheet_from_arb_workbook(currentWorkbookId)
-
-        
 
 if __name__ == '__main__':
     FantraxUtils.download_teams_to_sheets()

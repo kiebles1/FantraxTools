@@ -36,6 +36,15 @@ class TestFantraxTools(unittest.TestCase):
         ftools.write_headers_to_team_sheet(wsid, 'Sheet1', list(plr.keys()))
         ftools.write_player_to_team_sheet('Sheet1', wsid, plr)
 
+    def testRosterToWorkbook(self):
+        wsid = ftools.create_arb_workbook('testTeam')
+        team = ftu.Team('Sheet1', 'abcdefg')
+        team.append(ftu.Player({'Name':'Mike Trout', 'Pos':'OF', 'Salary':'5'}))
+        team.append(ftu.Player({'Name':'Mookie Betts', 'Pos':'OF', 'Salary':'27'}))
+        team.append(ftu.Player({'Name':'Raphael Devers', 'Pos':'3B', 'Salary':'22'}))
+        ftools.write_headers_to_team_sheet(wsid, 'Sheet1', list(team[0].keys()))
+        ftools.export_roster_to_arb_workbook(team, wsid)
+
 class TestSheetsService(unittest.TestCase):
     def create_test_sheet(self):
         self.service = sc.SheetsService()

@@ -75,21 +75,36 @@ def download_teams_to_sheets():
     print('ID: {}'.format(id))
 
 #TODO add destination dir as param
-def download_all_roster_files(period=None, leagueId=_LEAGUE_ID, teamsFile='cfg/Teams.csv'):
+def create_all_teams(period=None, leagueId=_LEAGUE_ID, teamsFile='cfg/Teams.csv'):
+    teamsList = list()
     if period is None:
-        teamsList = []
         nameIdPairs = get_team_name_id_pairs(teamsFile)
         for pair in nameIdPairs:
             if pair[0] == 'Team Name':
                 continue
-        
+                
             destination_file = download_roster_file(1, pair[1])
+            teamsList.append(build_team(destination_file, pair[0], pair[1]))
+
+    return teamsList
+
+#TODO add destination dir as param
+def download_all_roster_files(period=None, leagueId=_LEAGUE_ID, teamsFile='cfg/Teams.csv'):
+    fileList = list()
+    if period is None:
+        nameIdPairs = get_team_name_id_pairs(teamsFile)
+        for pair in nameIdPairs:
+            if pair[0] == 'Team Name':
+                continue
+                
+            destination_file = download_roster_file(1, pair[1])
+            fileList.append(destination_file)
 
 def main():
     # might like to make this print to a log
     print('Starting fantrax monitor...')
 
-    download_teams_to_sheets()
+    teamsList = create_all_teams()
 
     # teamsList = []
     # nameIdPairs = get_team_name_id_pairs('cfg/Teams.csv')
