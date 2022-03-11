@@ -12,17 +12,20 @@ _LEAGUE_ID = 'btbtpg55kwidi85g'
 statusIndex = 4
 
 def build_team(fileName, teamName, teamId):      
+    print('building team {}'.format(teamName))
     team = Team(teamName, teamId)
     keys = []
     with open(fileName, newline='') as csvfile:
         teamReader = csv.reader(csvfile, delimiter=',')
         for row in teamReader:  
-            if  (len(row) == 0) or (row[0] == 'Hitting') or (row[0] == 'Pitching') or (row[0] == 'Totals'):
+            if  (len(row) == 0) or (row[1] == 'Hitting') or (row[1] == 'Pitching') or (row[1] == 'Totals'):
                 # We don't care about these rows
                 continue
-            elif row[0] == 'Pos':
+            elif row[0] == 'ID':
                 keys = row
             else:
+                print('keys: {}'.format(keys))
+                print('row: {}'.format(row))
                 p = Player(zip(keys, row))
                 team.append(Player(zip(keys, row)))
         
@@ -75,7 +78,7 @@ def download_teams_to_sheets():
     print('ID: {}'.format(id))
 
 #TODO add destination dir as param
-def create_all_teams(period=None, leagueId=_LEAGUE_ID, teamsFile='cfg/Teams.csv'):
+def create_all_teams(period=None, leagueId=_LEAGUE_ID, teamsFile='./FantraxUtils/cfg/Teams.csv'):
     teamsList = list()
     if period is None:
         nameIdPairs = get_team_name_id_pairs(teamsFile)

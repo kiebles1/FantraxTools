@@ -31,9 +31,11 @@ def remove_leftover_sheet_from_arb_workbook(workbookId):
 def export_roster_to_arb_workbook(team, workbookId):
     for player in team:
         # TODO consider if there is a batch write that maybe counts as less operations
+        print('writing player {} from team {}'.format(player, team.name))
         write_player_to_team_sheet(team.name, workbookId, player)
 
 def create_arb_workbooks():
+    workbookIds = dict()
     pairsList = FantraxUtils.get_team_name_id_pairs('./FantraxUtils/cfg/Teams.csv')
     for outerPair in pairsList:
         outerName = outerPair[0]
@@ -42,6 +44,7 @@ def create_arb_workbooks():
             continue
 
         currentWorkbookId = create_arb_workbook(outerName)
+        workbookIds[outerName] = currentWorkbookId
 
         for innerPair in pairsList:
             innerName = innerPair[0]
@@ -53,6 +56,17 @@ def create_arb_workbooks():
             add_team_to_arb_workbook(innerName, innerId, currentWorkbookId)
 
         remove_leftover_sheet_from_arb_workbook(currentWorkbookId)
+    
+    return workbookIds
+
+def main():
+    workbookIds = create_arb_workbooks()
+    teamsList = FantraxUtils.create_all_teams()
+    for team in teamsList:
+        for arbTeam in teamsList:
+            wbid = workbookIds[team.name]
+            print('for team {} and wbid {} and arbTeam {}, starting roster export'.format(team, wbid, arbTeam))
+            export_roster_to_arb_workbook(arbTeam, wbid)
 
 if __name__ == '__main__':
-    FantraxUtils.download_teams_to_sheets()
+    main()
