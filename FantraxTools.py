@@ -15,10 +15,31 @@ def write_headers_to_team_sheet(workbookId, teamName, headers):
     service = SheetsService()
     service.execute_sheets_operation('write', worksheet_id=workbookId, sheet_name=teamName, data=[headers])
 
+def create_arb_sheet_keys_list():
+    keys_list = list()
+    keys_list.append('Pos')
+    keys_list.append('Player')
+    keys_list.append('Team')
+    keys_list.append('Eligible')
+    keys_list.append('Status')
+    keys_list.append('Salary')
+    return keys_list
+
+def create_arb_sheet_player_list(player):
+    player_list = list()
+    player_list.append(player['Pos'])
+    player_list.append(player['Player'])
+    player_list.append(player['Team'])
+    player_list.append(player['Eligible'])
+    player_list.append(player['Status'])
+    player_list.append(player['Salary'])
+    return player_list
+
 def write_player_to_team_sheet(teamName, workbookId, player):
     service = SheetsService()
     # data has to be a 2d list, even if you only have 1 row of data
-    service.execute_sheets_operation('write', worksheet_id=workbookId, sheet_name=teamName, data=[list(player.values())])
+    player_data = create_arb_sheet_player_list(player)
+    service.execute_sheets_operation('write', worksheet_id=workbookId, sheet_name=teamName, data=[player_data])
 
 def add_team_to_arb_workbook(teamName, teamId, workbookId):
     service = SheetsService()
@@ -29,6 +50,9 @@ def remove_leftover_sheet_from_arb_workbook(workbookId):
     service.execute_sheets_operation('delete_sheet', worksheet_id=workbookId, sheet_id=0)
 
 def export_roster_to_arb_workbook(team, workbookId):
+    keys_data = create_arb_sheet_keys_list()
+    service = SheetsService()
+    service.execute_sheets_operation('write', worksheet_id=workbookId, sheet_name=team.name, data=[keys_data])
     for player in team:
         # TODO consider if there is a batch write that maybe counts as less operations
         print('writing player {} from team {}'.format(player, team.name))

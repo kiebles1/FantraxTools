@@ -78,6 +78,7 @@ class SheetsService():
                 elif op == 'create':
                     ret = self._create_worksheet(workbook_name)
                 elif op == 'write':
+                    print('doing a write...')
                     self._write_sheet(worksheet_id, sheet_name, data)
                 elif op == 'delete_sheet':
                     self._delete_sheet(worksheet_id, sheet_id)
@@ -128,8 +129,25 @@ class SheetsService():
         return spreadsheet.get('spreadsheetId')
 
     def _write_sheet(self, worksheet_id, sheet_name, data):
+        # request = {'requests': [{
+        #     'appendCells': {'sheetId': sheet_id}
+        # }]}
+        # sheet_id
+        # self.service.spreadsheets().batchUpdate(spreadsheetId=worksheet_id, body=request).execute()
+        # print('size: {}'.format(self.service.spreadsheets().values().get(worksheet_id, range).execute().getValues().size()))
+        # result = self.service.spreadsheets().values().append(
+        #     spreadsheetId=worksheet_id, valueInputOption='RAW', range=sheet_name, body={'values': data}).execute()
+        # print('resulting size: {}'.format(result.getValues().size()))
+        rangeName = sheet_name + '!A1:Z1'
         self.service.spreadsheets().values().append(
-            spreadsheetId=worksheet_id, valueInputOption='RAW', range=sheet_name, body={'values': data}).execute()
+            spreadsheetId=worksheet_id,
+            range=rangeName,
+            body={
+                "majorDimension": "ROWS",
+                "values": data
+            },
+            valueInputOption="USER_ENTERED"
+        ).execute()
 
     def _delete_sheet(self, worksheet_id, sheet_id):
         request = {'requests': [{
