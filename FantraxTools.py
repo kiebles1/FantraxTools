@@ -69,6 +69,10 @@ def protect_arb_workbook_cells(workbookId, team):
     service = SheetsService()
     service.execute_sheets_operation('protect_range', worksheet_id=workbookId, sheet_name=team)
 
+def apply_data_validation_to_arb_workbook(workbookId, team):
+    service = SheetsService()
+    service.execute_sheets_operation('apply_data_validation', worksheet_id=workbookId, sheet_name=team)
+
 def create_arb_workbooks():
     workbookIds = dict()
     pairsList = FantraxUtils.get_team_name_id_pairs('./FantraxUtils/cfg/Teams.csv')
@@ -90,6 +94,7 @@ def create_arb_workbooks():
 
             add_team_to_arb_workbook(innerName, innerId, currentWorkbookId)
             protect_arb_workbook_cells(currentWorkbookId, innerName)
+            apply_data_validation_to_arb_workbook(currentWorkbookId, innerName)
 
         remove_leftover_sheet_from_arb_workbook(currentWorkbookId)
     

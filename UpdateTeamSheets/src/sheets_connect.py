@@ -88,6 +88,8 @@ class SheetsService():
                     self._protect_range(worksheet_id, sheet_name)
                 elif op == 'get_id_from_name':
                     ret = self._get_sheet_id_from_name(worksheet_id, sheet_name)
+                elif op == 'apply_data_validation':
+                    ret = self._apply_data_validation(worksheet_id, sheet_name)
                 else:
                     success = False
             except HttpError as err:
@@ -180,6 +182,69 @@ class SheetsService():
             }}
         }]}
         self.service.spreadsheets().batchUpdate(spreadsheetId=worksheet_id, body=request).execute()
+
+    def _apply_data_validation(self, worksheet_id, sheet_name, end_row_idx=100, end_column_idx=7, start_row_idx=1, start_column_idx=6):
+        sheet_id = self._get_sheet_id_from_name(worksheet_id, sheet_name)
+        request = {
+            'requests': [
+                {
+                'setDataValidation': {
+                    'range': {
+                    'sheetId': sheet_id,
+                    'startRowIndex': start_row_idx,
+                    'endRowIndex': end_row_idx,
+                    'startColumnIndex': start_column_idx,
+                    'endColumnIndex': end_column_idx
+                    },
+                    'rule': {
+                    'condition': {
+                        'type': 'NUMBER_BETWEEN',
+                        'values': [
+                        {
+                            'userEnteredValue': '0'
+                        },
+                        {
+                            'userEnteredValue': '3'
+                        }
+                        ]
+                    },
+                    'inputMessage': 'Value must between 0 and 3',
+                    'strict': True
+                    }
+                }
+                }
+            ]
+            }
+        # request = {'requests': [{
+        #     'setDataValidation': {
+        #         'range': {
+        #             'sheetId': sheet_id,
+        #             'startRowIndex': start_row_idx,
+        #             'startColumnIndex': start_column_idx,
+        #             'endRowIndex': end_row_idx,
+        #             'endColumnIndex': end_column_idx
+        #         },
+        #         'rule': {
+        #             'condition': {
+        #                 'type': 'NUMBER_BETWEEN',
+        #                 'values': [
+        #                     {
+        #                         'userEnteredValue': '0'
+        #                     },
+        #                     {
+        #                         'userEnteredValue': '3'
+        #                     }
+        #                 ]
+        #             }
+        #         },
+        #         'inputMessage': 'Value must be between 0 and 3',
+        #         'strict': True
+        #     }
+        # }]}
+
+        # return (request, sheet_id)
+        res = self.service.spreadsheets().batchUpdate(spreadsheetId=worksheet_id, body=request).execute()
+        return (res, sheet_id, request)
 
 if __name__ == '__main__':
     # main()

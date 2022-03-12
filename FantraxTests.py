@@ -82,5 +82,16 @@ class TestSheetsService(unittest.TestCase):
         sys.stdout = sys.__stdout__
         print('id: {}'.format(sheet_id))
 
+    def testDataValidation(self):
+        self.create_test_sheet()
+        guy = {'name':'Mike Trout','cost':'21', 'pos':'OF'}
+        guy = [list(guy.keys()), list(guy.values())]
+        self.service.execute_sheets_operation('add_sheet', worksheet_id=self.wsid, sheet_name='test')
+        self.service.execute_sheets_operation('write', worksheet_id=self.wsid, sheet_name='test', data=guy)
+
+        ret = self.service.execute_sheets_operation('apply_data_validation', worksheet_id=self.wsid, sheet_name='test')
+        sys.stdout = sys.__stdout__
+        print(ret)
+
 if __name__ == '__main__':
     unittest.main()
