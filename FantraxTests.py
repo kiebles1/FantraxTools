@@ -3,6 +3,7 @@ import FantraxUtils.FantraxUtils as ftu
 import FantraxTools as ftools
 import UpdateTeamSheets.src.sheets_connect as sc
 import os, os.path
+import sys
 
 class TestFantraxUtils(unittest.TestCase):
     def testDownloadAll(self):
@@ -59,12 +60,27 @@ class TestSheetsService(unittest.TestCase):
 
     def testGetSheetIds(self):
         self.create_test_sheet()
-        self.service.execute_sheets_operation('get_ids', worksheet_id=self.wsid)
+        ids = self.service.execute_sheets_operation('get_ids', worksheet_id=self.wsid)
 
     def testDeleteSheet(self):
         self.create_test_sheet()
         self.service.execute_sheets_operation('add_sheet', worksheet_id=self.wsid, sheet_name='test')
         self.service.execute_sheets_operation('delete_sheet', worksheet_id=self.wsid, sheet_id=0)
+
+    def testProtectRange(self):
+        self.create_test_sheet()
+        guy = {'name':'Mike Trout','cost':'21', 'pos':'OF'}
+        guy = [list(guy.keys()), list(guy.values())]
+        self.service.execute_sheets_operation('write', worksheet_id=self.wsid, sheet_name='Sheet1', data=guy)
+
+        self.service.execute_sheets_operation('protect_range', worksheet_id=self.wsid, sheet_name='test', data_range=None)
+
+    def testSheetIdFromName(self):
+        self.create_test_sheet()
+        self.service.execute_sheets_operation('add_sheet', worksheet_id=self.wsid, sheet_name='test')
+        sheet_id = self.service.execute_sheets_operation('get_id_from_name', worksheet_id=self.wsid, sheet_name='test')
+        sys.stdout = sys.__stdout__
+        print('id: {}'.format(sheet_id))
 
 if __name__ == '__main__':
     unittest.main()

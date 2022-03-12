@@ -1,5 +1,7 @@
 from __future__ import print_function
 
+import sys
+
 import os.path
 import time
 
@@ -82,6 +84,10 @@ class SheetsService():
                     self._write_sheet(worksheet_id, sheet_name, data)
                 elif op == 'delete_sheet':
                     self._delete_sheet(worksheet_id, sheet_id)
+                elif op == 'protect_range':
+                    self._protect_range(worksheet_id, sheet_name)
+                elif op == 'get_id_from_name':
+                    ret = self._get_sheet_id_from_name(worksheet_id, sheet_name)
                 else:
                     success = False
             except HttpError as err:
@@ -94,6 +100,16 @@ class SheetsService():
                 break    
 
         return ret
+
+    def _get_sheet_id_from_name(self, worksheet_id, sheet_name):
+        sheet_id = None
+
+        response = self.service.spreadsheets().get(spreadsheetId=worksheet_id).execute()
+        for sheet in response['sheets']:
+            if sheet['properties']['title'] == sheet_name:
+                sheet_id = sheet['properties']['sheetId']
+
+        return sheet_id
 
     def _read_sheet(self, worksheet_id, sheet_name, data_range=None):
         if data_range is None:
@@ -129,15 +145,6 @@ class SheetsService():
         return spreadsheet.get('spreadsheetId')
 
     def _write_sheet(self, worksheet_id, sheet_name, data):
-        # request = {'requests': [{
-        #     'appendCells': {'sheetId': sheet_id}
-        # }]}
-        # sheet_id
-        # self.service.spreadsheets().batchUpdate(spreadsheetId=worksheet_id, body=request).execute()
-        # print('size: {}'.format(self.service.spreadsheets().values().get(worksheet_id, range).execute().getValues().size()))
-        # result = self.service.spreadsheets().values().append(
-        #     spreadsheetId=worksheet_id, valueInputOption='RAW', range=sheet_name, body={'values': data}).execute()
-        # print('resulting size: {}'.format(result.getValues().size()))
         rangeName = sheet_name + '!A1:Z1'
         self.service.spreadsheets().values().append(
             spreadsheetId=worksheet_id,
@@ -152,6 +159,25 @@ class SheetsService():
     def _delete_sheet(self, worksheet_id, sheet_id):
         request = {'requests': [{
             'deleteSheet': {'sheetId': sheet_id}
+        }]}
+        self.service.spreadsheets().batchUpdate(spreadsheetId=worksheet_id, body=request).execute()
+
+    # todo probably best not to default this to convenience values for this one specific use case
+    def _protect_range(self, worksheet_id, sheet_name, end_row_idx=100, end_column_idx=6, start_row_idx=0, start_column_idx=0):
+        sheet_id = self._get_sheet_id_from_name(worksheet_id, sheet_name)
+        request = {'requests': [{
+            'addProtectedRange': {'protectedRange': {
+                'range': {
+                    'sheetId': sheet_id,
+                    'startRowIndex': start_row_idx,
+                    'startColumnIndex': start_column_idx,
+                    'endRowIndex': end_row_idx,
+                    'endColumnIndex': end_column_idx
+                },
+                'description': 'Protecting all...',
+                'warningOnly': False,
+                'requestingUserCanEdit': True
+            }}
         }]}
         self.service.spreadsheets().batchUpdate(spreadsheetId=worksheet_id, body=request).execute()
 

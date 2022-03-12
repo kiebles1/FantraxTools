@@ -33,6 +33,10 @@ def create_arb_sheet_player_list(player):
     player_list.append(player['Eligible'])
     player_list.append(player['Status'])
     player_list.append(player['Salary'])
+    
+    # extra fields for arb stuff, current allocation and new salary
+    player_list.append(0)
+    player_list.append('=INDEX(A1:G, ROW(), 6) + INDEX(A1:G, ROW(), 7)')
     return player_list
 
 def write_player_to_team_sheet(teamName, workbookId, player):
@@ -51,12 +55,19 @@ def remove_leftover_sheet_from_arb_workbook(workbookId):
 
 def export_roster_to_arb_workbook(team, workbookId):
     keys_data = create_arb_sheet_keys_list()
+    # append extra colums for arbitration to the keys list
+    keys_data.append('Allocation')
+    keys_data.append('New Total')
     service = SheetsService()
     service.execute_sheets_operation('write', worksheet_id=workbookId, sheet_name=team.name, data=[keys_data])
     for player in team:
         # TODO consider if there is a batch write that maybe counts as less operations
         print('writing player {} from team {}'.format(player, team.name))
         write_player_to_team_sheet(team.name, workbookId, player)
+
+def protect_arb_workbook_cells(workbookId, team):
+    service = SheetsService()
+    service.execute_sheets_operation('protect_range', worksheet_id=workbookId, sheet_name=team)
 
 def create_arb_workbooks():
     workbookIds = dict()
@@ -78,6 +89,7 @@ def create_arb_workbooks():
                 continue
 
             add_team_to_arb_workbook(innerName, innerId, currentWorkbookId)
+            protect_arb_workbook_cells(currentWorkbookId, innerName)
 
         remove_leftover_sheet_from_arb_workbook(currentWorkbookId)
     
