@@ -62,8 +62,9 @@ def export_roster_to_arb_workbook(team, workbookId):
     service.execute_sheets_operation('write', worksheet_id=workbookId, sheet_name=team.name, data=[keys_data])
     for player in team:
         # TODO consider if there is a batch write that maybe counts as less operations
-        print('writing player {} from team {}'.format(player, team.name))
-        write_player_to_team_sheet(team.name, workbookId, player)
+        if player['Status'] != 'Min':
+            print('writing player {} from team {}'.format(player, team.name))
+            write_player_to_team_sheet(team.name, workbookId, player)
 
 def protect_arb_workbook_cells(workbookId, team):
     service = SheetsService()
