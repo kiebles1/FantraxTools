@@ -17,6 +17,27 @@ class TestFantraxUtils(unittest.TestCase):
     def testPlayerMethods(self):
         plr = ftu.Player({'name': 'Mike Trout', 'Pos': 'OF'})
         self.assertTrue(list(plr.values()) == ['Mike Trout', 'OF'])
+    
+    def testUpdateTeamSalarys(self):
+        plr1 = ftu.Player({'name': 'John Means', 'Pos': 'SP', 'Salary': 2})
+        plr2 = ftu.Player({'name': 'Mike Trout', 'Pos': 'OF', 'Salary': 35})
+        plr3 = ftu.Player({'name': 'Cedric Mullins', 'Pos': 'OF', 'Salary': 17})
+        tm = ftu.Team('cool team', 'abc')
+        tm.append(plr1)
+        tm.append(plr2)
+        tm.append(plr3)
+        tm.UpdatePlayerSalary('Mike Trout', 4)
+        tm.UpdatePlayerSalary('Cedric Mullins', 2)
+        tm.UpdatePlayerSalary('John Means', 9)
+        for plr in tm:
+            if plr['name'] == 'Mike Trout':
+                self.assertTrue(plr['Salary'] == 39)
+            elif plr['name'] == 'Cedric Mullins':
+                self.assertTrue(plr['Salary'] == 19)
+            elif plr['name'] == 'John Means':
+                self.assertTrue(plr['Salary'] == 11)
+            else:
+                print('TEST ERROR ERRONEOUS PLAYER {}'.format(plr['name']))
         
 class TestFantraxTools(unittest.TestCase):
     def testCreateArbSheets(self):
@@ -50,6 +71,16 @@ class TestSheetsService(unittest.TestCase):
     def create_test_sheet(self):
         self.service = sc.SheetsService()
         self.wsid = self.service.execute_sheets_operation('create', workbook_name='TestSheet')
+
+    def testReadSheet(self):
+        guy = {'name':'Mike Trout','cost':'21', 'pos':'OF'}
+        guy = [list(guy.keys()), list(guy.values())]
+        self.create_test_sheet()
+        self.service.execute_sheets_operation('add_sheet', worksheet_id=self.wsid, sheet_name='test1')
+        self.service.execute_sheets_operation('write', worksheet_id=self.wsid, sheet_name='test1', data=guy)
+        data = self.service.execute_sheets_operation('read', worksheet_id=self.wsid, sheet_name='test1')
+        print(type(data))
+        print(data)
 
     def testWriteDictToSheet(self):
         guy = {'name':'Mike Trout','cost':'21', 'pos':'OF'}

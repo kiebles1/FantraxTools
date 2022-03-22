@@ -1,4 +1,5 @@
 import operator
+from FantraxUtils.Player import Player
 
 class Team(list):
 
@@ -13,6 +14,16 @@ class Team(list):
         result = self.ValidateMinorsSize()
         print(self.name + ': ' + str(result))
         
+    def UpdatePlayerSalary(self, playerName, updateValue):
+        for player in self:
+            if player['Player'] == playerName:
+                player.UpdateSalary(updateValue)
+
+    def UpdateAllMajorsSalaries(self, updateValue):
+        for player in self:
+            if player['Status'] != 'min':
+                player['Salary'] += 2
+
     def ValidateMinorsSize(self):
         result = True
         count = 0;
