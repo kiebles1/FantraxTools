@@ -9,6 +9,9 @@ class Player(dict):
     def GetStatus(self):
         return self['Status']
 
+    def UpdateSalary(self, updateValue):
+        self['Salary'] = self['Salary'] + updateValue
+
 def main():
     myPlayer = Player('Mike Trout')
     print(myPlayer)
