@@ -3,6 +3,7 @@ import FantraxUtils.FantraxUtils as FantraxUtils
 from FantraxUtils import Team
 import datetime
 import argparse
+import csv
 
 def create_arb_workbook(teamName):
     service = SheetsService()
@@ -111,13 +112,33 @@ def handle_args():
 def generate_full_arb_workbooks(teamsList):
     workbookIds = create_arb_workbooks()
     for team in teamsList:
+        team.workbookId = workbookIds[team.name]
         for arbTeam in teamsList:
             wbid = workbookIds[team.name]
             print('for team {} and wbid {} and arbTeam {}, starting roster export'.format(team, wbid, arbTeam))
             export_roster_to_arb_workbook(arbTeam, wbid)
 
+def get_workbook_id_for_team(teamName):
+    with open('FantraxUtils/cfg/ids.csv', 'r') as csvfile:
+        reader = csv.reader(csvfile, delimiter='|')
+        for row in reader:
+            if row[0] == teamName:
+                id = row[1]
+
+    return id
+
 def process_arb_workbooks(teamsList):
-    print('processing...')
+    for team in teamsList:
+        id = get_workbook_id_for_team('Fire Sale, come and get it')
+        service = SheetsService()
+        if team.name == 'Fire Sale, come and get it':
+            continue
+        salaries = service.execute_sheets_operation('read', worksheet_id=id, sheet_name=team.name, data_range='G2:G')
+        playerNames = service.execute_sheets_operation('read', worksheet_id=id, sheet_name=team.name, data_range='B2:B')
+        newSalaryList = zip(playerNames, salaries)
+        for item in newSalaryList:
+            print('{}: {}'.format(item[0], int(item[1][0])))
+            team.UpdatePlayerSalary(item[0][0], int(item[1][0]))
 
 def main():
     args = handle_args()
@@ -127,6 +148,11 @@ def main():
     
     if 'process' in args.functions:
         process_arb_workbooks(teamsList)
+
+    for team in teamsList:
+        if team.name == 'SouthSliders':
+            for player in team:
+                print('Player: {}\n\tSalary: {}'.format(player['Player'], player['Salary']))
 
 if __name__ == '__main__':
     main()

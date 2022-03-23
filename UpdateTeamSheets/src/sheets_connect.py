@@ -117,7 +117,7 @@ class SheetsService():
         if data_range is None:
             data_range=sheet_name
         else:
-            data_range=sheet_name + ':' + data_range
+            data_range=sheet_name + '!' + data_range
 
         values = self.service.spreadsheets().values().get(spreadsheetId=worksheet_id, range=data_range).execute()
         data = values.get('values', [])

@@ -15,8 +15,12 @@ class Team(list):
         print(self.name + ': ' + str(result))
         
     def UpdatePlayerSalary(self, playerName, updateValue):
+        print('update has {}: {}'.format(playerName, updateValue))
         for player in self:
+            if 'Guerrero' in player['Player']:
+                print('found vlad')
             if player['Player'] == playerName:
+                print('updating sal for {}'.format(player))
                 player.UpdateSalary(updateValue)
 
     def UpdateAllMajorsSalaries(self, updateValue):
@@ -33,6 +37,13 @@ class Team(list):
         
         if count > 10:
             result = False
-            
+
         return result
-            
+    
+    @property
+    def workbookId(self):
+        return self.workbookId
+
+    @workbookId.setter
+    def workbookId(self, workbookId):
+        self.workbookId = workbookId
