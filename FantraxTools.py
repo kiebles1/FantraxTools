@@ -2,6 +2,7 @@ from UpdateTeamSheets.src.sheets_connect import SheetsService
 import FantraxUtils.FantraxUtils as FantraxUtils
 from FantraxUtils import Team
 import datetime
+import argparse
 
 def create_arb_workbook(teamName):
     service = SheetsService()
@@ -101,14 +102,31 @@ def create_arb_workbooks():
     
     return workbookIds
 
-def main():
+def handle_args():
+    parser = argparse.ArgumentParser(description='Perform different services for a Fantrax fantasy baseball league')
+    parser.add_argument('functions', type=str, nargs='+', help='functions to perform')
+    args = parser.parse_args()
+    return args
+
+def generate_full_arb_workbooks(teamsList):
     workbookIds = create_arb_workbooks()
-    teamsList = FantraxUtils.create_all_teams()
     for team in teamsList:
         for arbTeam in teamsList:
             wbid = workbookIds[team.name]
             print('for team {} and wbid {} and arbTeam {}, starting roster export'.format(team, wbid, arbTeam))
             export_roster_to_arb_workbook(arbTeam, wbid)
+
+def process_arb_workbooks(teamsList):
+    print('processing...')
+
+def main():
+    args = handle_args()
+    teamsList = FantraxUtils.create_all_teams()
+    if 'generate' in args.functions:
+        generate_full_arb_workbooks(teamsList)
+    
+    if 'process' in args.functions:
+        process_arb_workbooks(teamsList)
 
 if __name__ == '__main__':
     main()
