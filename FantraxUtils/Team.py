@@ -15,18 +15,14 @@ class Team(list):
         print(self.name + ': ' + str(result))
         
     def UpdatePlayerSalary(self, playerName, updateValue):
-        print('update has {}: {}'.format(playerName, updateValue))
         for player in self:
-            if 'Guerrero' in player['Player']:
-                print('found vlad')
             if player['Player'] == playerName:
-                print('updating sal for {}'.format(player))
                 player.UpdateSalary(updateValue)
 
     def UpdateAllMajorsSalaries(self, updateValue):
         for player in self:
             if player['Status'] != 'min':
-                player['Salary'] += 2
+                player.UpdateSalary(updateValue)
 
     def ValidateMinorsSize(self):
         result = True

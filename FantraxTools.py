@@ -128,17 +128,20 @@ def get_workbook_id_for_team(teamName):
     return id
 
 def process_arb_workbooks(teamsList):
-    for team in teamsList:
-        id = get_workbook_id_for_team('Fire Sale, come and get it')
+    for arbTeam in teamsList:
+        arbTeam.UpdateAllMajorsSalaries(2)
+        id = get_workbook_id_for_team(arbTeam.name)
         service = SheetsService()
-        if team.name == 'Fire Sale, come and get it':
-            continue
-        salaries = service.execute_sheets_operation('read', worksheet_id=id, sheet_name=team.name, data_range='G2:G')
-        playerNames = service.execute_sheets_operation('read', worksheet_id=id, sheet_name=team.name, data_range='B2:B')
-        newSalaryList = zip(playerNames, salaries)
-        for item in newSalaryList:
-            print('{}: {}'.format(item[0], int(item[1][0])))
-            team.UpdatePlayerSalary(item[0][0], int(item[1][0]))
+        for team in teamsList:
+            if team.name == arbTeam.name:
+                continue
+            salaries = service.execute_sheets_operation('read', worksheet_id=id, sheet_name=team.name, data_range='G2:G')
+            playerNames = service.execute_sheets_operation('read', worksheet_id=id, sheet_name=team.name, data_range='B2:B')
+            newSalaryList = zip(playerNames, salaries)
+            for item in newSalaryList:
+                input('press enter!')
+                team.UpdatePlayerSalary(item[0][0], int(item[1][0]))
+                # print('{}: {}'.format(item[0], int(item[1][0])))
 
 def main():
     args = handle_args()
