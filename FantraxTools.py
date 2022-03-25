@@ -127,8 +127,15 @@ def get_workbook_id_for_team(teamName):
 
     return id
 
+def apply_salaries(teamsList):
+    for team in teamsList:
+        print('\n\nTeam: {}'.format(team.name))
+        for player in team:
+            input('{}: {}'.format(player['Player'], player['Salary']))
+
 def process_arb_workbooks(teamsList):
     for arbTeam in teamsList:
+        print('current arb: {}'.format(arbTeam.name))
         arbTeam.UpdateAllMajorsSalaries(2)
         id = get_workbook_id_for_team(arbTeam.name)
         service = SheetsService()
@@ -137,11 +144,16 @@ def process_arb_workbooks(teamsList):
                 continue
             salaries = service.execute_sheets_operation('read', worksheet_id=id, sheet_name=team.name, data_range='G2:G')
             playerNames = service.execute_sheets_operation('read', worksheet_id=id, sheet_name=team.name, data_range='B2:B')
+            if playerNames is None:
+                print('playerNames None! {}, {}'.format(arbTeam.name, team.name))
+            if salaries is None:
+                print('salaries None! {}, {}'.format(arbTeam.name, team.name))
             newSalaryList = zip(playerNames, salaries)
             for item in newSalaryList:
-                input('press enter!')
+                # input('enter!')
                 team.UpdatePlayerSalary(item[0][0], int(item[1][0]))
-                # print('{}: {}'.format(item[0], int(item[1][0])))
+
+    apply_salaries(teamsList)
 
 def main():
     args = handle_args()

@@ -12,8 +12,6 @@ class Player(dict):
 
     def UpdateSalary(self, updateValue):
         self['Salary'] = self['Salary'] + updateValue
-        if updateValue != 0:
-            print('Player {} new salary is {}'.format(self['Player'], self['Salary']))
 
 def main():
     myPlayer = Player('Mike Trout')
