@@ -8,7 +8,7 @@ from FantraxUtils.Team import Team
 from FantraxUtils.Player import Player
 from UpdateTeamSheets.src.sheets_connect import SheetsService
 
-_LEAGUE_ID = 'btbtpg55kwidi85g'
+_LEAGUE_ID = 'wkr127m7l90hdm8n'
 statusIndex = 4
 
 def build_team(fileName, teamName, teamId):      
@@ -46,7 +46,7 @@ def find_previous_monday_period(currentDate):
 def download_roster_file(period, teamId, leagueId=_LEAGUE_ID):
     # TODO generate season code (currently 139 for 2022 projections)
     url = 'https://www.fantrax.com/fxpa/downloadTeamRosterStats?leagueId=' + \
-        leagueId + '&pageNumber=1&period=1&scoringPeriod=' + str(period) + '&seasonOrProjection=PROJECTION_0_139_SEASON&timeframeTypeCode=YEAR_TO_DATE&scoringCategoryType=5&statsType=1&view=STATS&teamId=' + teamId + '&adminMode=false&startDate=2020-03-26&endDate=2020-09-28&lineupChangeSystem=EASY_CLICK&daily=false&origDaily=false&'
+        leagueId + '&pageNumber=1&period=1&scoringPeriod=' + str(period) + '&seasonOrProjection=PROJECTION_0_141_SEASON&timeframeTypeCode=YEAR_TO_DATE&scoringCategoryType=5&statsType=1&view=STATS&teamId=' + teamId + '&adminMode=false&startDate=2023-03-30&endDate=2023-10-02&lineupChangeSystem=EASY_CLICK&daily=false&origDaily=false&'
     webbrowser.get('windows-default').open(url)
     
     dwnld_directory = os.path.join(pathlib.Path.home(), 'Downloads')

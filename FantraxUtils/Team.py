@@ -21,7 +21,7 @@ class Team(list):
 
     def UpdateAllMajorsSalaries(self, updateValue):
         for player in self:
-            if player['Status'] != 'min':
+            if player['Status'] != 'Min':
                 player.UpdateSalary(updateValue)
 
     def ValidateMinorsSize(self):
@@ -41,5 +41,9 @@ class Team(list):
         return self.workbookId
 
     @workbookId.setter
-    def workbookId(self, workbookId):
-        self.workbookId = workbookId
+    def workbookId(self, wbid):
+        self._workbookId = wbid
+
+    @workbookId.getter
+    def workbookId(self, wbid):
+        self._workbookId = wbid
