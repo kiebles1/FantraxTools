@@ -30,11 +30,11 @@ class TestFantraxUtils(unittest.TestCase):
         tm.UpdatePlayerSalary('Cedric Mullins', 2)
         tm.UpdatePlayerSalary('John Means', 9)
         for plr in tm:
-            if plr['Player'] == 'Mike Trout':
+            if plr['name'] == 'Mike Trout':
                 self.assertTrue(plr['Salary'] == 39)
-            elif plr['Player'] == 'Cedric Mullins':
+            elif plr['name'] == 'Cedric Mullins':
                 self.assertTrue(plr['Salary'] == 19)
-            elif plr['Player'] == 'John Means':
+            elif plr['name'] == 'John Means':
                 self.assertTrue(plr['Salary'] == 11)
             else:
                 print('TEST ERROR ERRONEOUS PLAYER {}'.format(plr['name']))
