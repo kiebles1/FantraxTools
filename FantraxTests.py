@@ -19,9 +19,15 @@ class TestFantraxUtils(unittest.TestCase):
         self.assertTrue(list(plr.values()) == ['Mike Trout', 'OF'])
     
     def testUpdateTeamSalarys(self):
+<<<<<<< HEAD
         plr1 = ftu.Player({'name': 'John Means', 'Pos': 'SP', 'Salary': 2})
         plr2 = ftu.Player({'name': 'Mike Trout', 'Pos': 'OF', 'Salary': 35})
         plr3 = ftu.Player({'name': 'Cedric Mullins', 'Pos': 'OF', 'Salary': 17})
+=======
+        plr1 = ftu.Player({'Player': 'John Means', 'Pos': 'SP', 'Salary': 2})
+        plr2 = ftu.Player({'Player': 'Mike Trout', 'Pos': 'OF', 'Salary': 35})
+        plr3 = ftu.Player({'Player': 'Cedric Mullins', 'Pos': 'OF', 'Salary': 17})
+>>>>>>> 9f0484a1a82fd048e246575f42037cf9276ae11e
         tm = ftu.Team('cool team', 'abc')
         tm.append(plr1)
         tm.append(plr2)
