@@ -140,6 +140,7 @@ def process_arb_workbooks(teamsList):
         arbTeam.UpdateAllMajorsSalaries(2)
         id = get_workbook_id_for_team(arbTeam.name)
         service = SheetsService()
+        runningSalary = 0
         for team in teamsList:
             if team.name == arbTeam.name:
                 continue
@@ -153,6 +154,10 @@ def process_arb_workbooks(teamsList):
             for item in newSalaryList:
                 # input('enter!')
                 team.UpdatePlayerSalary(item[0][0], int(item[1][0]))
+                runningSalary += int(item[1][0])
+
+        if runningSalary > 25:
+            print('WARNING: {} allocated over $25 ({})'.format(arbTeam.name, runningSalary))
 
     apply_salaries(teamsList)
 
