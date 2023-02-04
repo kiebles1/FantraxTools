@@ -77,16 +77,33 @@ def download_teams_to_sheets():
     id = sheets_service.create_worksheet('SteveSheet')
     print('ID: {}'.format(id))
 
+def get_roster_file(period, teamId):
+    destPath = os.path.join(os.getcwd(), 'Rosters')
+    if os.path.isdir(destPath) == False:
+        os.mkdir(destPath)
+
+    destination_file = os.path.join(destPath, 'Fantrax-Team-Roster-Millennial Bark-' + teamId + '-' + str(period) + '.csv')
+    if os.path.isfile(destination_file) is True:
+        return destination_file
+    else:
+        print("ERROR: File {} does not exist".format(destination_file))
+
+    return None
+
 #TODO add destination dir as param
-def create_all_teams(period=None, leagueId=_LEAGUE_ID, teamsFile='./FantraxUtils/cfg/Teams.csv'):
+def create_all_teams(period=None, leagueId=_LEAGUE_ID, teamsFile='./FantraxUtils/cfg/Teams.csv', sheets=False):
     teamsList = list()
     if period is None:
         nameIdPairs = get_team_name_id_pairs(teamsFile)
         for pair in nameIdPairs:
             if pair[0] == 'Team Name':
                 continue
+            
+            if sheets is False:
+                destination_file = download_roster_file(1, pair[1])
+            else:
+                destination_file = get_roster_file(1, pair[1])
                 
-            destination_file = download_roster_file(1, pair[1])
             teamsList.append(build_team(destination_file, pair[0], pair[1]))
 
     return teamsList

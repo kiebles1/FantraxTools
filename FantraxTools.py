@@ -106,6 +106,7 @@ def create_arb_workbooks():
 def handle_args():
     parser = argparse.ArgumentParser(description='Perform different services for a Fantrax fantasy baseball league')
     parser.add_argument('functions', type=str, nargs='+', help='functions to perform')
+    parser.add_argument('-s', '--sheets', action='store_true', help='Write google sheets from existing rosters')
     args = parser.parse_args()
     return args
 
@@ -157,7 +158,8 @@ def process_arb_workbooks(teamsList):
 
 def main():
     args = handle_args()
-    teamsList = FantraxUtils.create_all_teams()
+    print('sheets set to {}'.format(str(args.sheets)))
+    teamsList = FantraxUtils.create_all_teams(sheets=args.sheets)
     if 'generate' in args.functions:
         generate_full_arb_workbooks(teamsList)
     
