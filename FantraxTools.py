@@ -123,6 +123,7 @@ def get_workbook_id_for_team(teamName):
     with open('FantraxUtils/cfg/ids.csv', 'r') as csvfile:
         reader = csv.reader(csvfile, delimiter='|')
         for row in reader:
+            print('row: {}'.format(str(row)))
             if row[0] == teamName:
                 id = row[1]
 
@@ -142,6 +143,7 @@ def process_arb_workbooks(teamsList):
         service = SheetsService()
         runningSalary = 0
         for team in teamsList:
+            runningTeamSalary = 0
             if team.name == arbTeam.name:
                 continue
             salaries = service.execute_sheets_operation('read', worksheet_id=id, sheet_name=team.name, data_range='G2:G')
@@ -154,7 +156,13 @@ def process_arb_workbooks(teamsList):
             for item in newSalaryList:
                 # input('enter!')
                 team.UpdatePlayerSalary(item[0][0], int(item[1][0]))
+                runningTeamSalary += int(item[1][0])
                 runningSalary += int(item[1][0])
+
+            if runningTeamSalary > 3:
+                print('WARNING: {} allocated over $3 ({}) to team {}'.format(arbTeam.name, runningTeamSalary, team.name))
+            elif runningTeamSalary < 1:
+                print('WARNING: {} did not allocate any money ({})to {}'.format(arbTeam.name, runningTeamSalary, team.name))
 
         if runningSalary > 25:
             print('WARNING: {} allocated over $25 ({})'.format(arbTeam.name, runningSalary))
