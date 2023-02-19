@@ -26,7 +26,6 @@ def build_team(fileName, teamName, teamId):
             else:
                 print('keys: {}'.format(keys))
                 print('row: {}'.format(row))
-                p = Player(zip(keys, row))
                 team.append(Player(zip(keys, row)))
         
     return team

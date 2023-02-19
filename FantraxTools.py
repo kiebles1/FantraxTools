@@ -123,17 +123,32 @@ def get_workbook_id_for_team(teamName):
     with open('FantraxUtils/cfg/ids.csv', 'r') as csvfile:
         reader = csv.reader(csvfile, delimiter='|')
         for row in reader:
-            print('row: {}'.format(str(row)))
             if row[0] == teamName:
                 id = row[1]
 
     return id
 
+def update_league_salaries(teamsList):
+    updatedRows = list()
+    with open('FantraxUtils/cfg/FantraxPlayers.csv', 'r') as csvfile:
+        reader = csv.reader(csvfile)
+        for row in reader:
+            for team in teamsList:
+                player = team.GetPlayerForID(row[0])
+                if player is not None:
+                    updatedRows.append(row)
+                    row[5] = player['Salary']
+                    break
+
+    with open('FantraxUtils/cfg/FantraxPlayers_new.csv', 'w', newline='') as csvfile:
+        writer = csv.writer(csvfile)
+        writer.writerows(updatedRows)
+
 def apply_salaries(teamsList):
-    for team in teamsList:
-        print('\n\nTeam: {}'.format(team.name))
-        for player in team:
-            input('{}: {}'.format(player['Player'], player['Salary']))
+    update_league_salaries(teamsList)
+        # for player in team:
+            # input('{}: {}'.format(player['Player'], player['Salary']))
+
 
 def process_arb_workbooks(teamsList):
     for arbTeam in teamsList:
@@ -166,6 +181,8 @@ def process_arb_workbooks(teamsList):
 
         if runningSalary > 25:
             print('WARNING: {} allocated over $25 ({})'.format(arbTeam.name, runningSalary))
+        elif runningSalary < 25:
+            print('WARNING: {} allocated less than $25 ({})'.format(arbTeam.name, runningSalary))
 
     apply_salaries(teamsList)
 

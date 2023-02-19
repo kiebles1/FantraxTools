@@ -6,9 +6,14 @@ class Team(list):
     def __init__(self, name, teamId):
         self.name = name
         self.teamId = teamId
+        self.hashDict = dict()
 
     def __repr__(self):
         return self.name
+
+    def append(self, player):
+        self.hashDict[player['ID']] = player
+        super(Team, self).append(player)
 
     def CheckRules(self):
         result = self.ValidateMinorsSize()
@@ -35,6 +40,12 @@ class Team(list):
             result = False
 
         return result
+
+    def GetPlayerForID(self, id):
+        try:
+            return self.hashDict[id]
+        except KeyError:
+            return None
     
     @property
     def workbookId(self):
