@@ -104,7 +104,7 @@ def create_arb_workbooks():
     return workbookIds
 
 def handle_args():
-    parser = argparse.ArgumentParser(description='Perform different services for a Fantrax fantasy baseball league')
+    parser = argparse.ArgumentParser(description='Perform different services for a Fantrax fantasy baseball league. Valid functions are "generate" and "process".')
     parser.add_argument('functions', type=str, nargs='+', help='functions to perform')
     parser.add_argument('-s', '--sheets', action='store_true', help='Write google sheets from existing rosters')
     args = parser.parse_args()
@@ -148,7 +148,6 @@ def apply_salaries(teamsList):
     update_league_salaries(teamsList)
         # for player in team:
             # input('{}: {}'.format(player['Player'], player['Salary']))
-
 
 def process_arb_workbooks(teamsList):
     for arbTeam in teamsList:
