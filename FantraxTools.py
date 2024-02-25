@@ -107,7 +107,10 @@ def handle_args():
     parser = argparse.ArgumentParser(description='Perform different services for a Fantrax fantasy baseball league. Valid functions are "generate" and "process".')
     parser.add_argument('functions', type=str, nargs='+', help='functions to perform')
     parser.add_argument('-s', '--sheets', action='store_true', help='Write google sheets from existing rosters')
+    parser.add_argument('p', '--prompt', action='store_true', help='Prompt user before saving new salary')
     args = parser.parse_args()
+    if ('process' not in args.functions) and (args.prompt is True):
+        print('WARNING: \'prompt\' only used when performing the \'process\' funciton. Ignoring...')
     return args
 
 def generate_full_arb_workbooks(teamsList):
@@ -149,7 +152,7 @@ def apply_salaries(teamsList):
         # for player in team:
             # input('{}: {}'.format(player['Player'], player['Salary']))
 
-def process_arb_workbooks(teamsList):
+def process_arb_workbooks(teamsList, prompt=False):
     for arbTeam in teamsList:
         print('current arb: {}'.format(arbTeam.name))
         arbTeam.UpdateAllMajorsSalaries(2)
@@ -170,7 +173,8 @@ def process_arb_workbooks(teamsList):
             # add a total to the end of the column, this still works out fine
             newSalaryList = zip(playerNames, salaries)
             for item in newSalaryList:
-                # input('enter! player item: {}'.format(item))
+                if prompt is True:
+                    input('enter! player item: {}'.format(item))
                 team.UpdatePlayerSalary(item[0][0], int(item[1][0]))
                 runningTeamSalary += int(item[1][0])
                 runningSalary += int(item[1][0])
@@ -195,7 +199,7 @@ def main():
         generate_full_arb_workbooks(teamsList)
     
     if 'process' in args.functions:
-        process_arb_workbooks(teamsList)
+        process_arb_workbooks(teamsList, args.prompt)
 
     for team in teamsList:
         if team.name == 'SouthSliders':
