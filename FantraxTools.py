@@ -166,9 +166,11 @@ def process_arb_workbooks(teamsList):
                 print('playerNames None! {}, {}'.format(arbTeam.name, team.name))
             if salaries is None:
                 print('salaries None! {}, {}'.format(arbTeam.name, team.name))
+            # zip only iterates as far as the shortest passed list, so if one list is longer, as 'salaries' often is because people
+            # add a total to the end of the column, this still works out fine
             newSalaryList = zip(playerNames, salaries)
             for item in newSalaryList:
-                # input('enter!')
+                # input('enter! player item: {}'.format(item))
                 team.UpdatePlayerSalary(item[0][0], int(item[1][0]))
                 runningTeamSalary += int(item[1][0])
                 runningSalary += int(item[1][0])
