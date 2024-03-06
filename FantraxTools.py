@@ -1,3 +1,4 @@
+from icecream import ic
 from UpdateTeamSheets.src.sheets_connect import SheetsService
 import FantraxUtils.FantraxUtils as FantraxUtils
 from FantraxUtils import Team
@@ -103,16 +104,6 @@ def create_arb_workbooks():
     
     return workbookIds
 
-def handle_args():
-    parser = argparse.ArgumentParser(description='Perform different services for a Fantrax fantasy baseball league. Valid functions are "generate" and "process".')
-    parser.add_argument('functions', type=str, nargs='+', help='functions to perform')
-    parser.add_argument('-s', '--sheets', action='store_true', help='Write google sheets from existing rosters')
-    parser.add_argument('-p', '--prompt', action='store_true', help='Prompt user before saving new salary')
-    args = parser.parse_args()
-    if ('process' not in args.functions) and (args.prompt is True):
-        print('WARNING: \'prompt\' only used when performing the \'process\' funciton. Ignoring...')
-    return args
-
 def generate_full_arb_workbooks(teamsList):
     workbookIds = create_arb_workbooks()
     for team in teamsList:
@@ -149,8 +140,6 @@ def update_league_salaries(teamsList):
 
 def apply_salaries(teamsList):
     update_league_salaries(teamsList)
-        # for player in team:
-            # input('{}: {}'.format(player['Player'], player['Salary']))
 
 def process_arb_workbooks(teamsList, prompt=False):
     for arbTeam in teamsList:
@@ -191,20 +180,36 @@ def process_arb_workbooks(teamsList, prompt=False):
 
     apply_salaries(teamsList)
 
+def handle_args():
+    parser = argparse.ArgumentParser(description='Perform different services for a Fantrax fantasy baseball league. Valid functions are "generate" and "process".')
+    parser.add_argument('functions', type=str, nargs='+', help='functions to perform')
+    parser.add_argument('-x', '--existing', action='store_true', help='Use existing rosters')
+    parser.add_argument('-p', '--prompt', action='store_true', help='Prompt user before saving new salary')
+    parser.add_argument('-l', '--loud', action='store_true', help='Loud mode: enable a bunch of output spew')
+    args = parser.parse_args()
+    if ('process' not in args.functions) and (args.prompt is True):
+        print('WARNING: \'prompt\' only used when performing the \'process\' funciton. Ignoring...')
+    return args
+
 def main():
     args = handle_args()
-    print('sheets set to {}'.format(str(args.sheets)))
-    teamsList = FantraxUtils.create_all_teams(sheets=args.sheets)
+    if not args.loud:
+        ic.disable()
+    teamsList = FantraxUtils.create_all_teams(sheets=args.existing)
     if 'generate' in args.functions:
         generate_full_arb_workbooks(teamsList)
     
     if 'process' in args.functions:
         process_arb_workbooks(teamsList, args.prompt)
 
+    if 'project' in args.functions:
+        print('do nothing for now')
+
+    # just a little double check debug code
     for team in teamsList:
         if team.name == 'SouthSliders':
             for player in team:
-                print('Player: {}\n\tSalary: {}'.format(player['Player'], player['Salary']))
+                ic('Player: {}\n\tSalary: {}'.format(player['Player'], player['Salary']))
 
 if __name__ == '__main__':
     main()

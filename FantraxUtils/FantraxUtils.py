@@ -1,3 +1,4 @@
+from icecream import ic
 import webbrowser
 import csv
 import os
@@ -24,8 +25,8 @@ def build_team(fileName, teamName, teamId):
             elif row[0] == 'ID':
                 keys = row
             else:
-                print('keys: {}'.format(keys))
-                print('row: {}'.format(row))
+                ic('keys: {}'.format(keys))
+                ic('row: {}'.format(row))
                 team.append(Player(zip(keys, row)))
         
     return team
