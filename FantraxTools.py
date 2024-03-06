@@ -107,7 +107,7 @@ def handle_args():
     parser = argparse.ArgumentParser(description='Perform different services for a Fantrax fantasy baseball league. Valid functions are "generate" and "process".')
     parser.add_argument('functions', type=str, nargs='+', help='functions to perform')
     parser.add_argument('-s', '--sheets', action='store_true', help='Write google sheets from existing rosters')
-    parser.add_argument('p', '--prompt', action='store_true', help='Prompt user before saving new salary')
+    parser.add_argument('-p', '--prompt', action='store_true', help='Prompt user before saving new salary')
     args = parser.parse_args()
     if ('process' not in args.functions) and (args.prompt is True):
         print('WARNING: \'prompt\' only used when performing the \'process\' funciton. Ignoring...')
