@@ -1,15 +1,11 @@
-from time import sleep
 from icecream import ic
-from UpdateTeamSheets.src.sheets_connect import SheetsService
+from Sheets.src.sheets_connect import SheetsService
 import FantraxUtils.FantraxUtils as FantraxUtils
 from FantraxUtils import Team
 import datetime
 import argparse
 import csv
-import webbrowser
-import pathlib
 import os
-import shutil
 from selenium import webdriver
 from selenium.webdriver.common.by import By
 import json
@@ -193,7 +189,7 @@ def get_existing_projections(batters, system):
     if os.path.isdir(destPath) == False:
         os.mkdir(destPath)
 
-    destination_file = os.path.join(destPath, 'Projections/projections-' + ('batters' if batters else 'pitchers') + '-' + system + '.csv')
+    destination_file = os.path.join(destPath, 'projections-' + ('batters' if batters else 'pitchers') + '-' + system + '.csv')
     if os.path.isfile(destination_file) is True:
         return destination_file
     else:
@@ -209,6 +205,12 @@ def project(teamsList, existing=True):
     else:
         hitterFile = get_existing_projections(True, 'thebatx')
         pitcherFile = get_existing_projections(False, 'atc')
+
+    for team in teamsList:
+        for player in team:
+            fgid = player.GetFGID()
+            # if fangraphs ID is -1, they weren't in the sheet, so assume we don't care
+            # if fgid != -1:
 
 
 def download_projections(batters, system):

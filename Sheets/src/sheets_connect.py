@@ -18,11 +18,12 @@ SCOPES = ['https://www.googleapis.com/auth/spreadsheets']
 # The ID and range of a sample spreadsheet.
 SAMPLE_SPREADSHEET_ID = '1BxiMVs0XRA5nFMdKvBdBZjgmUUqptlbs74OgvE2upms'
 FANTRAX_ROSTER_SPREADSHEET_ID = '1CC0YMzxfQUzV_0ukdChjrPCFqpUp342BUUkRvVdHnew'
+TRANSLATOR_SPREADHSHEET_ID = '1P7asO5jpClFD6VoP5sgpGJmBhSuc98aiAr6x4_OKGKU'
 SAMPLE_RANGE_NAME = 'Class Data!A2:E'
 FANTRAX_ROSTER_RANGE_NAME = 'Roster!C3:C26'
 
 class SheetsService():
-    _TOKEN_PATH = 'UpdateTeamSheets/cfg/token.json'
+    _TOKEN_PATH = 'Sheets/cfg/token.json'
 
     def __init__(self):
         """Shows basic usage of the Sheets API.
@@ -46,7 +47,7 @@ class SheetsService():
                         creds.refresh(Request())
                     else:
                         flow = InstalledAppFlow.from_client_secrets_file(
-                            'UpdateTeamSheets/cfg/credentials.json', SCOPES)
+                            'Sheets/cfg/credentials.json', SCOPES)
                         creds = flow.run_local_server(port=0)
                     # Save the credentials for the next run
                     with open(self._TOKEN_PATH, 'w') as token:

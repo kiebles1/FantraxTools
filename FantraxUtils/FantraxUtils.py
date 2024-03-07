@@ -7,7 +7,7 @@ import pathlib
 import datetime
 from FantraxUtils.Team import Team
 from FantraxUtils.Player import Player
-from UpdateTeamSheets.src.sheets_connect import SheetsService
+from Sheets.src.sheets_connect import SheetsService
 
 _LEAGUE_ID = '760pg1p9lpq1aag4'
 statusIndex = 4

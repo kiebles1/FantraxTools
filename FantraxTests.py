@@ -1,7 +1,7 @@
 import unittest
 import FantraxUtils.FantraxUtils as ftu
 import FantraxTools as ftools
-import UpdateTeamSheets.src.sheets_connect as sc
+import Sheets.src.sheets_connect as sc
 import os, os.path
 import sys
 
