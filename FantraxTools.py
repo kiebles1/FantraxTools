@@ -1,3 +1,4 @@
+from time import sleep
 from icecream import ic
 from UpdateTeamSheets.src.sheets_connect import SheetsService
 import FantraxUtils.FantraxUtils as FantraxUtils
@@ -5,6 +6,13 @@ from FantraxUtils import Team
 import datetime
 import argparse
 import csv
+import webbrowser
+import pathlib
+import os
+import shutil
+from selenium import webdriver
+from selenium.webdriver.common.by import By
+import json
 
 def create_arb_workbook(teamName):
     service = SheetsService()
@@ -180,6 +188,48 @@ def process_arb_workbooks(teamsList, prompt=False):
 
     apply_salaries(teamsList)
 
+def get_existing_projections(batters, system):
+    destPath = os.path.join(os.getcwd(), 'Projections')
+    if os.path.isdir(destPath) == False:
+        os.mkdir(destPath)
+
+    destination_file = os.path.join(destPath, 'Projections/projections-' + ('batters' if batters else 'pitchers') + '-' + system + '.csv')
+    if os.path.isfile(destination_file) is True:
+        return destination_file
+    else:
+        print("ERROR: File {} does not exist".format(destination_file))
+
+    return None
+
+
+def project(teamsList, existing=True):
+    if not existing:
+        hitterFile = download_projections(True, 'thebatx')
+        pitcherFile = download_projections(False, 'atc')
+    else:
+        hitterFile = get_existing_projections(True, 'thebatx')
+        pitcherFile = get_existing_projections(False, 'atc')
+
+
+def download_projections(batters, system):
+    browser = webdriver.Chrome()
+    browser.get('https://www.fangraphs.com/api/projections?type=' + system + '&stats=' + ('bat' if batters else 'pit') + '&pos=all&team=0&lg=all&download=1')
+    pre = browser.find_element(By.TAG_NAME, 'pre').text
+    jsonData = json.loads(pre)
+
+    destFilePath = 'Projections/projections-' + ('batters' if batters else 'pitchers') + '-' + system + '.csv'
+    headersWritten = False
+    with open(destFilePath, 'w', newline='') as f:
+        writer = csv.writer(f)
+        for player in jsonData:
+            if not headersWritten:
+                writer.writerow(list(player.keys())[1:-1])
+                headersWritten = True
+            
+            writer.writerow(list(player.values())[1:-1])
+    
+    return destFilePath
+
 def handle_args():
     parser = argparse.ArgumentParser(description='Perform different services for a Fantrax fantasy baseball league. Valid functions are "generate" and "process".')
     parser.add_argument('functions', type=str, nargs='+', help='functions to perform')
@@ -203,7 +253,7 @@ def main():
         process_arb_workbooks(teamsList, args.prompt)
 
     if 'project' in args.functions:
-        print('do nothing for now')
+        project(teamsList, existing=args.existing)
 
     # just a little double check debug code
     for team in teamsList:
@@ -213,3 +263,9 @@ def main():
 
 if __name__ == '__main__':
     main()
+
+    # jsonstr = None
+    # with open('Projections/file.json', 'r') as f:
+    #     jsonstr = json.load(f)
+
+    # print(type(jsonstr))
