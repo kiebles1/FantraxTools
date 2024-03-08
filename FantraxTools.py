@@ -210,12 +210,14 @@ def project(teamsList, existing=True):
         for player in team:
             fgid = player.GetFGID()
             # if fangraphs ID is -1, they weren't in the sheet, so assume we don't care
-            # if fgid != -1:
-
+            if fgid != -1:
+                player.Project(hitterFile)
+        
+        team.ReportProjections()
 
 def download_projections(batters, system):
     browser = webdriver.Chrome()
-    browser.get('https://www.fangraphs.com/api/projections?type=' + system + '&stats=' + ('bat' if batters else 'pit') + '&pos=all&team=0&lg=all&download=1')
+    browser.get('https://www.fangraphs.com/api/projections?type=' + system + '&stats=' + ('bat' if batters else 'pit') + '&pos=all&team=0&lg=all&statgroup=fantasy&download=1')
     pre = browser.find_element(By.TAG_NAME, 'pre').text
     jsonData = json.loads(pre)
 

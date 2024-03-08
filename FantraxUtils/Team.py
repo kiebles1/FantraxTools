@@ -10,6 +10,19 @@ class Team(list):
 
     def __repr__(self):
         return self.name
+    
+    def _initializeProjections(self):
+        self._hrProjection = 0.0
+        self._avgProjection = 0.0
+        self._obpProjection = 0.0
+        self._rProjection = 0.0
+        self._rbiProjection = 0.0
+        self._sbProjection = 0.0
+        self._abProjection = 0.0
+        self._paProjection = 0.0
+        
+        self._avgProjectionNumerator = 0.0
+        self._obpProjectionNumerator = 0.0
 
     def append(self, player):
         self.hashDict[player['ID']] = player
@@ -46,6 +59,26 @@ class Team(list):
             return self.hashDict[id]
         except KeyError:
             return None
+        
+    def ReportProjections(self):
+        self._initializeProjections()
+        for player in self:
+            if player.GetStatus() != 'Min':
+                self._hrProjection += player['HR']
+                self._rProjection += player['R']
+                self._rbiProjection += player['RBI']
+                self._sbProjection += player['SB']
+                self._paProjection += player['PA']
+                self._abProjection += player['AB']
+                self._obpProjectionNumerator += (player['OBP'] * player['PA'])
+                self._avgProjectionNumerator += (player['AVG'] * player['AB'])
+
+        print('Team {}'.format(self.name))
+        print('\tHR: {HR}\n\tR: {R}\n\tRBI: {RBI}\n\tSB: {SB}\n\tOBP: {OBP}\n\tAVG: {AVG}\n\tPA: {PA}'.format(HR=self._hrProjection, R=self._rProjection, \
+                                                                                      RBI=self._rbiProjection, SB=self._sbProjection, \
+                                                                                      OBP=(self._obpProjectionNumerator / self._paProjection),\
+                                                                                      AVG=(self._avgProjectionNumerator / self._abProjection),\
+                                                                                      PA=self._paProjection))
     
     @property
     def workbookId(self):
