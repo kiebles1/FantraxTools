@@ -211,7 +211,7 @@ def project(teamsList, existing=True):
             fgid = player.GetFGID()
             # if fangraphs ID is -1, they weren't in the sheet, so assume we don't care
             if fgid != -1:
-                player.Project(hitterFile)
+                player.Project(hitterFile, pitcherFile)
         
         team.ReportProjections()
 

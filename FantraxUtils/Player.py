@@ -8,7 +8,7 @@ class Player(dict):
 
     _translationTable = None
     _hitterProjections = None
-    _picherProjections = None
+    _pitcherProjections = None
     
     def __init__(self, kvps):
         super(Player, self).__init__(kvps)
@@ -30,6 +30,34 @@ class Player(dict):
                 break
             else:
                 self['FangraphsID'] = -1
+
+    def _readPitcherFile(self, pitcherFile):
+        if Player._pitcherProjections is None:
+            Player._pitcherProjections = []
+
+        keys = []
+        with open(pitcherFile, newline='') as csvfile:
+            projReader = csv.reader(csvfile, delimiter=',')
+            for row in projReader:
+                if row[0] == 'Team':
+                    keys = row
+                else:
+                    Player._pitcherProjections.append(dict(zip(keys, row)))
+
+    def _projectPitcher(self):
+        playerFound = False
+        for proj in Player._pitcherProjections:
+            if proj['playerid'] == self['FangraphsID']:
+                ic('Projections for {} are {}'.format(self, proj))
+                playerFound = True
+                for stat in Player._PITCHER_PROEJCTION_CATS:
+                    self[stat] = float(proj[stat])
+                
+                break
+
+        # if a player doesn't have fangraphs projections, assume we don't want to know about them
+        if not playerFound:
+            self['Status'] = 'Min'
 
     def _readHitterFile(self, hitterFile):
         if Player._hitterProjections is None:
@@ -76,12 +104,12 @@ class Player(dict):
             self._readHitterFile(hitterFile)
             print('reading new hitter projection file {}'.format(hitterFile))
         
-        if pitcherFile is not None:
-            # self._read
+        if Player._pitcherProjections is None:
+            self._readPitcherFile(pitcherFile)
             print('reading new pitcher projection file {}'.format(pitcherFile))
 
-        if 'SP' in self['Pos'] or 'RP' in self['Pos']:
-            print('skipping pitchers for now')
+        if 'SP' in self['Pos'] or 'RP' in self['Pos'] or 'P' == self['Pos']:
+            self._projectPitcher()
         else:
             self._projectHitter()
 
