@@ -1,4 +1,5 @@
 from icecream import ic
+from time import sleep
 import webbrowser
 import csv
 import os
@@ -9,11 +10,11 @@ from FantraxUtils.Team import Team
 from FantraxUtils.Player import Player
 from Sheets.src.sheets_connect import SheetsService
 
-_LEAGUE_ID = '760pg1p9lpq1aag4'
+_LEAGUE_ID = '4wipynrxm4hnucf0'
 statusIndex = 4
 
 def build_team(fileName, teamName, teamId):      
-    print('building team {}'.format(teamName))
+    print('building team {} with ID {} in file {}'.format(teamName, teamId, fileName))
     team = Team(teamName, teamId)
     keys = []
     with open(fileName, newline='') as csvfile:
@@ -44,24 +45,32 @@ def find_previous_monday_period(currentDate):
     return period.days
 
 def download_roster_file(period, teamId, leagueId=_LEAGUE_ID):
-    # TODO generate season code (currently 139 for 2022 projections)
         #    https://www.fantrax.com/fxpa/downloadTeamRosterStats?leagueId=760pg1p9lpq1aag4&pageNumber=1&teamId=75w2l4f6lpq1aag5&period=1&scoringPeriod=1&seasonOrProjection=PROJECTION_0_143_SEASON&timeframeTypeCode=YEAR_TO_DATE&scoringCategoryType=5&statsType=1&view=STATS&adminMode=false&startDate=2024-03-20&endDate=2023-12-09&lineupChangeSystem=EASY_CLICK&daily=false&origDaily=false&
+    seasonCode = 139 + (2 * ((datetime.date.today().year + 1) - 2022))
     url = 'https://www.fantrax.com/fxpa/downloadTeamRosterStats?leagueId=' + \
-        leagueId + '&pageNumber=1&period=1&scoringPeriod=' + str(period) + '&seasonOrProjection=PROJECTION_0_143_SEASON&timeframeTypeCode=YEAR_TO_DATE&scoringCategoryType=5&statsType=1&view=STATS&teamId=' + teamId + '&adminMode=false&startDate=2024-03-30&endDate=2024-10-02&lineupChangeSystem=EASY_CLICK&daily=false&origDaily=false&'
+        leagueId + '&pageNumber=1&period=1&scoringPeriod=' + str(period) + '&seasonOrProjection=PROJECTION_0_' + str(seasonCode) + '_SEASON&timeframeTypeCode=YEAR_TO_DATE&scoringCategoryType=5&statsType=1&view=STATS&teamId=' + teamId + '&adminMode=false&startDate=2025-03-18&endDate=2024-10-02&lineupChangeSystem=EASY_CLICK&daily=false&origDaily=false&'
     
-    webbrowser.get('windows-default').open(url)
+    webbrowser.get().open(url)
     
     dwnld_directory = os.path.join(pathlib.Path.home(), 'Downloads')
     exists = False
     while exists is False:
         exists = os.path.isfile(os.path.join(dwnld_directory, 'Fantrax-Team-Roster-Millennial Bark.csv'))
 
+    size = 0
+    while size <=0:
+        size = os.path.getsize(os.path.join(dwnld_directory, 'Fantrax-Team-Roster-Millennial Bark.csv'))
+
     destPath = os.path.join(os.getcwd(), 'Rosters')
+    print('saving rosters to dest {}'.format(destPath))
     if os.path.isdir(destPath) == False:
         os.mkdir(destPath)
 
     destination_file = os.path.join(destPath, 'Fantrax-Team-Roster-Millennial Bark-' + teamId + '-' + str(period) + '.csv')
+    print('saving team ID {}'.format(teamId))
+    sleep(3)
     shutil.move(os.path.join(dwnld_directory, 'Fantrax-Team-Roster-Millennial Bark.csv'), destination_file)
+    print('new file size is {}'.format(os.path.getsize(destination_file)))
     return destination_file
     
 def get_team_name_id_pairs(fileName):
@@ -118,7 +127,7 @@ def download_all_roster_files(period=None, leagueId=_LEAGUE_ID, teamsFile='cfg/T
         for pair in nameIdPairs:
             if pair[0] == 'Team Name':
                 continue
-                
+    
             destination_file = download_roster_file(1, pair[1])
             fileList.append(destination_file)
 
