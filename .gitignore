@@ -5,5 +5,13 @@ token.json
 *__pycache__*
 
 Fantrax-Team-Roster*
-Teams.csv
+# Feels like we should keep the Google sheet IDs off github, and they are stored in ids.csv
+ids.csv
+#TODO I think this can be removed when we check out current projection functionality
 fangraphs-leaderboard-projections.csv
+
+Projections/*
+# Could reconsider having this in the repo, but it feels like making user take the manual step
+# of going to download these reduces likelihood of accidentally performing operations with
+# the wrong copies of these files.
+FantraxPlayers*.csv
