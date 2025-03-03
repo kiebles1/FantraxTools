@@ -3,8 +3,8 @@ import csv
 from Sheets.src.sheets_connect import SheetsService, TRANSLATOR_SPREADHSHEET_ID
 
 class Player(dict):
-    _HITTER_PROEJCTION_CATS = ['AB', 'PA', 'AVG', 'HR', 'R', 'RBI', 'OBP', 'SB']
-    _PITCHER_PROEJCTION_CATS = ['W', 'IP', 'SV', 'HLD', 'SO', 'ERA', 'WHIP', 'QS']
+    HITTER_PROJECTION_CATS = ['AB', 'PA', 'AVG', 'HR', 'R', 'RBI', 'OBP', 'SB']
+    PITCHER_PROJECTION_CATS = ['W', 'IP', 'SV', 'HLD', 'SO', 'ERA', 'WHIP', 'QS']
 
     _translationTable = None
     _hitterProjections = None
@@ -50,7 +50,7 @@ class Player(dict):
             if proj['playerid'] == self['FangraphsID']:
                 ic('Projections for {} are {}'.format(self, proj))
                 playerFound = True
-                for stat in Player._PITCHER_PROEJCTION_CATS:
+                for stat in Player.PITCHER_PROJECTION_CATS:
                     self[stat] = float(proj[stat])
                 
                 break
@@ -78,7 +78,7 @@ class Player(dict):
             if proj['playerid'] == self['FangraphsID']:
                 ic('Projections for {} are {}'.format(self, proj))
                 playerFound = True
-                for stat in Player._HITTER_PROEJCTION_CATS:
+                for stat in Player.HITTER_PROJECTION_CATS:
                     self[stat] = float(proj[stat])
                 
                 break

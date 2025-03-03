@@ -197,7 +197,6 @@ def get_existing_projections(batters, system):
 
     return None
 
-
 def project(teamsList, existing=True):
     if not existing:
         hitterFile = download_projections(True, 'thebatx')
@@ -213,7 +212,11 @@ def project(teamsList, existing=True):
             if fgid != -1:
                 player.Project(hitterFile, pitcherFile)
         
+        team.GenerateProjections()
         team.ReportProjections()
+    
+    # TODO figure out what I was trying to do here. Probably sort projects by something
+    # teamsList.sort(key=lambda p: p.)
 
 def download_projections(batters, system):
     browser = webdriver.Chrome()
