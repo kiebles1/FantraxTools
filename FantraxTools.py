@@ -1,7 +1,7 @@
 from icecream import ic
 from Sheets.src.sheets_connect import SheetsService
 import FantraxUtils.FantraxUtils as FantraxUtils
-from FantraxUtils import Team
+from FantraxUtils import Player
 import datetime
 import argparse
 import csv
@@ -210,7 +210,12 @@ def project(teamsList, existing=True):
             fgid = player.GetFGID()
             # if fangraphs ID is -1, they weren't in the sheet, so assume we don't care
             if fgid != -1:
-                player.Project(hitterFile, pitcherFile)
+                try:
+                    player.Project(hitterFile, pitcherFile)
+                except Player.KeyException as e:
+                    print(e)
+                    print('ERROR: Failed to generate projections.')
+                    return
         
         team.GenerateProjections()
         team.ReportProjections()
@@ -238,7 +243,7 @@ def download_projections(batters, system):
     return destFilePath
 
 def handle_args():
-    parser = argparse.ArgumentParser(description='Perform different services for a Fantrax fantasy baseball league. Valid functions are "generate" and "process".')
+    parser = argparse.ArgumentParser(description='Perform different services for a Fantrax fantasy baseball league. Valid functions are "generate", "process", and "project".')
     parser.add_argument('functions', type=str, nargs='+', help='functions to perform')
     parser.add_argument('-x', '--existing', action='store_true', help='Use existing rosters')
     parser.add_argument('-p', '--prompt', action='store_true', help='Prompt user before saving new salary')
@@ -270,9 +275,3 @@ def main():
 
 if __name__ == '__main__':
     main()
-
-    # jsonstr = None
-    # with open('Projections/file.json', 'r') as f:
-    #     jsonstr = json.load(f)
-
-    # print(type(jsonstr))

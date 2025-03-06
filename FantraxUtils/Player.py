@@ -2,6 +2,9 @@ from icecream import ic
 import csv
 from Sheets.src.sheets_connect import SheetsService, TRANSLATOR_SPREADHSHEET_ID
 
+class KeyException(Exception):
+    pass
+
 class Player(dict):
     HITTER_PROJECTION_CATS = ['AB', 'PA', 'AVG', 'HR', 'R', 'RBI', 'OBP', 'SB']
     PITCHER_PROJECTION_CATS = ['W', 'IP', 'SV', 'HLD', 'SO', 'ERA', 'WHIP', 'QS']
@@ -37,17 +40,21 @@ class Player(dict):
 
         keys = []
         with open(pitcherFile, newline='') as csvfile:
+            FIRST_KEY = 'ShortName'
             projReader = csv.reader(csvfile, delimiter=',')
             for row in projReader:
-                if row[0] == 'Team':
+                if row[0] == FIRST_KEY:
                     keys = row
                 else:
+                    if not keys:
+                        raise KeyException("ERROR: Couldn't find key row in {}, attempted to detect A1 is {}.".format(pitcherFile, FIRST_KEY))
+
                     Player._pitcherProjections.append(dict(zip(keys, row)))
 
     def _projectPitcher(self):
         playerFound = False
         for proj in Player._pitcherProjections:
-            if proj['playerid'] == self['FangraphsID']:
+            if proj['playerids'] == self['FangraphsID']:
                 ic('Projections for {} are {}'.format(self, proj))
                 playerFound = True
                 for stat in Player.PITCHER_PROJECTION_CATS:
@@ -65,17 +72,21 @@ class Player(dict):
 
         keys = []
         with open(hitterFile, newline='') as csvfile:
+            FIRST_KEY = 'ShortName'
             projReader = csv.reader(csvfile, delimiter=',')
             for row in projReader:
-                if row[0] == 'Team':
+                if row[0] == FIRST_KEY:
                     keys = row
                 else:
+                    if not keys:
+                        raise KeyException("ERROR: Couldn't find key row in {}, attempted to detect A1 is {}.".format(hitterFile, FIRST_KEY))
+
                     Player._hitterProjections.append(dict(zip(keys, row)))
 
     def _projectHitter(self):
         playerFound = False
         for proj in Player._hitterProjections:
-            if proj['playerid'] == self['FangraphsID']:
+            if proj['playerids'] == self['FangraphsID']:
                 ic('Projections for {} are {}'.format(self, proj))
                 playerFound = True
                 for stat in Player.HITTER_PROJECTION_CATS:
@@ -101,12 +112,20 @@ class Player(dict):
 
     def Project(self, hitterFile=None, pitcherFile=None):
         if Player._hitterProjections is None:
-            self._readHitterFile(hitterFile)
             print('reading new hitter projection file {}'.format(hitterFile))
+            try:
+                self._readHitterFile(hitterFile)
+            except KeyException as e:
+                print(e)
+                raise e
         
         if Player._pitcherProjections is None:
-            self._readPitcherFile(pitcherFile)
             print('reading new pitcher projection file {}'.format(pitcherFile))
+            try:
+                self._readPitcherFile(pitcherFile)
+            except KeyException as e:
+                print(e)
+                raise e
 
         if 'SP' in self['Pos'] or 'RP' in self['Pos'] or 'P' == self['Pos']:
             self._projectPitcher()
